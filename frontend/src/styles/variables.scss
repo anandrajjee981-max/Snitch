@@ -1,0 +1,36 @@
+// Theme Colors (Skin tone & Warm neutrals)
+$clay-deep: #4e3629;      // Deep clay solids for text, primary CTA, dark backgrounds
+$clay-hover: #3d2b20;     // Darker hover clay
+$beige-warm: #f7f3ee;     // Warm beige canvas/background
+$sand-accent: #c3b091;    // Sand accent for buttons, borders, subtle contrasts
+$sand-light: #e6dfd5;     // Lighter sand for soft borders and subtle backgrounds
+$cream-surface: #fffdfb;  // Cream surfaces for card backgrounds, navbar panels
+
+// Text Colors
+$text-dark: #2c1e16;      // Primary readable text color
+$text-muted: #7e6e65;     // Secondary details text
+$text-light: #f7f3ee;     // High contrast light text for CTAs
+
+// UI Styling
+$radius-ios-card: 24px;   // Ultra-smooth rounded corners for products
+$radius-menu: 16px;       // Rounded corners for menu buttons and dropdowns
+$radius-pill: 9999px;     // Pill shape for tags and primary buttons
+
+// Shadows
+$shadow-inset: inset 0 2px 8px rgba(78, 54, 41, 0.04);
+$shadow-card: 0 10px 30px -10px rgba(78, 54, 41, 0.08), 0 1px 3px rgba(78, 54, 41, 0.03);
+$shadow-dropdown: 0 12px 32px rgba(78, 54, 41, 0.12);
+$shadow-drawer: -10px 0 40px rgba(78, 54, 41, 0.06);
+
+// Glassmorphism
+$glass-bg: rgba(255, 253, 251, 0.7);
+$glass-border: rgba(255, 255, 255, 0.45);
+$glass-blur: blur(20px);
+
+// Animation & Transitions
+$transition-smooth: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+$transition-fast: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+// Typography Fonts
+$font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$font-serif: 'Playfair Display', Georgia, serif;
