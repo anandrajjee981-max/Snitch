@@ -24,14 +24,14 @@ export default function Navbar({ activeCategory, setActiveCategory }) {
 
   const handleLogoClick = () => {
     setActiveCategory('All');
-    navigate('/');
+    navigate('/dashboard');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleNavClick = (category) => {
     setActiveCategory(category);
     setIsMobileMenuOpen(false);
-    navigate('/');
+    navigate('/dashboard');
 
     // Give router a frame to mount grid, then scroll
     setTimeout(() => {

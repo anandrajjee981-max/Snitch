@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Phone, ArrowRight, Globe, ShieldAlert, UserCheck } from 'lucide-react';
 import gsap from 'gsap';
+import useauth from './hook/UseAuth';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -40,19 +41,28 @@ export default function Register() {
     return () => ctx.revert();
   }, []);
 
-  const handleSubmit = (e) => {
+  const { handleregister } = useauth();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!username || !email || !phone || !password) {
       alert('Please fill out all fields.');
       return;
     }
-    alert(`Account created successfully! Welcome, ${username} (${role}).`);
-    navigate('/login');
+
+    const res = await handleregister(email, password, role, phone, username);
+    if (res && res.success) {
+      navigate('/dashboard');
+    } else {
+      const msg = res?.error || 'Registration failed';
+      alert(msg);
+    }
   };
 
   const handleGoogleSignup = () => {
-    alert('Connecting to Google accounts registration...');
-    navigate('/');
+    // Redirect to backend Google auth endpoint for signup/login via Google
+    const BACKEND = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
+    window.location.href = `${BACKEND}/api/auth/google`;
   };
 
   return (

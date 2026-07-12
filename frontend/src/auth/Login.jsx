@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, ArrowRight, Globe } from 'lucide-react';
 import gsap from 'gsap';
+import useauth from './hook/UseAuth';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ export default function Login() {
   const cardRef = useRef(null);
   const titleRef = useRef(null);
   const inputsRef = useRef([]);
+  const{handlelogin} = useauth()
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -36,19 +38,22 @@ export default function Login() {
     return () => ctx.revert();
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
       alert('Please fill out all fields.');
       return;
     }
-    alert(`Logged in successfully as: ${email}`);
-    navigate('/');
+    const res = await handlelogin(email, password);
+    if (res && res.success) {
+      navigate('/dashboard');
+    }
   };
 
   const handleGoogleLogin = () => {
-    alert('Connecting to Google accounts authentication...');
-    navigate('/');
+    // Redirect to backend Google auth endpoint which will handle the OAuth flow
+    const BACKEND = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
+    window.location.href = `${BACKEND}/api/auth/google`;
   };
 
   return (
@@ -71,7 +76,7 @@ export default function Login() {
               <input
                 id="email"
                 type="email"
-                placeholder="name@domain.com"
+                autoComplete="new-email" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -93,6 +98,7 @@ export default function Login() {
               <input
                 id="password"
                 type="password"
+                autoComplete="new-password" 
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

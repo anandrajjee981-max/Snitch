@@ -3,8 +3,8 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import Hero from './components/Hero';
 import ProductGrid from './components/ProductGrid';
 import ProductDetails from './components/ProductDetails';
-import Login from './components/Login';
-import Register from './components/Register';
+import Login from './auth/Login';
+import Register from './auth/Register';
 import { AnimatePresence, motion } from 'framer-motion';
 
 // Page wrapper for smooth route transitions
@@ -22,6 +22,13 @@ const PageWrapper = ({ children }) => (
 export default function AppRoutes({ activeCategory, setActiveCategory }) {
   const location = useLocation();
 
+  const storePage = (
+    <PageWrapper>
+      <Hero />
+      <ProductGrid activeCategory={activeCategory} />
+    </PageWrapper>
+  );
+
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
@@ -29,11 +36,11 @@ export default function AppRoutes({ activeCategory, setActiveCategory }) {
           path="/" 
           element={
             <PageWrapper>
-              <Hero />
-              <ProductGrid activeCategory={activeCategory} />
+              <Login />
             </PageWrapper>
           } 
         />
+        <Route path="/dashboard" element={storePage} />
         <Route 
           path="/product/:id" 
           element={

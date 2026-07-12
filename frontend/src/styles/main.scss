@@ -159,6 +159,10 @@ ul {
     align-items: center;
     gap: 1.5rem;
 
+    @media (max-width: 576px) {
+      gap: 0.5rem;
+    }
+
     .icon-btn {
       color: $text-dark;
       padding: 0.5rem;
@@ -195,6 +199,20 @@ ul {
       display: none;
       @media (max-width: 992px) {
         display: flex;
+        background: rgba(78, 54, 41, 0.07);
+        border-radius: 10px;
+        padding: 0.45rem 0.6rem;
+        border: 1px solid rgba(78, 54, 41, 0.12);
+        color: $clay-deep;
+
+        &:hover {
+          background: rgba(78, 54, 41, 0.13);
+        }
+
+        &:active {
+          background: rgba(78, 54, 41, 0.18);
+          transform: scale(0.96);
+        }
       }
     }
   }

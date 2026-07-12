@@ -3,9 +3,15 @@ import { useCart } from '../context/CartContext';
 import { ArrowLeft, ShoppingBag, Heart, Shield, RefreshCw } from 'lucide-react';
 import { PRODUCTS } from './ProductGrid';
 import { motion } from 'framer-motion';
+import { useParams, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 
-export default function ProductDetails({ productId, onBack, onNavigateToProduct }) {
+export default function ProductDetails() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const productId = parseInt(id, 10) || id;
+  const onBack = () => navigate('/');
+  const onNavigateToProduct = (pid) => navigate(`/product/${pid}`);
   const { addToCart } = useCart();
   const product = PRODUCTS.find((p) => p.id === productId);
 
