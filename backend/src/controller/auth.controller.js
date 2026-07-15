@@ -7,7 +7,9 @@ import passport from 'passport';
 async function generateToken(user, res) {
   // jwt.sign is synchronous by default unless given a callback
   const token = jwt.sign(
-    { id: user._id }, 
+    { id: user._id ,
+      role :user.role
+    }, 
     Config.JWT_SECRET, 
     { expiresIn: "1d" }
   );
@@ -116,18 +118,24 @@ export function googleAuth(req, res, next) {
 
 
 export function googleAuthCallback(req, res, next) {
-  passport.authenticate('google', { session: false, failureRedirect: '/login-failed' }, async (err, user, info) => {
+
+  passport.authenticate('google', { session: false }, async (err, user, info) => {
     console.log('googleAuthCallback invoked, err:', err, 'info:', info);
+    
+
     if (err) {
       console.error('Google auth error:', err);
-      return res.status(500).json({ message: "Internal server error during Google auth" });
-    }
-    
-    if (!user) {
-      console.warn('No user returned from passport:', info);
-      return res.status(401).json({ message: "Google authentication failed" });
+
+      return res.redirect('http://localhost:5173/');
     }
 
+    if (!user) {
+      console.warn('No user returned from passport:', info);
+   
+      return res.redirect('http://localhost:5173/login?error=auth_failed');
+    }
+
+    // 3. Handle successful authentication
     try {
       console.log('Authenticated user from Google:', user.email || user.username || user._id);
       await generateToken(user, res);
@@ -135,7 +143,7 @@ export function googleAuthCallback(req, res, next) {
       return res.redirect('http://localhost:5173/dashboard'); 
     } catch (tokenErr) {
       console.error('Token generation error:', tokenErr);
-      return res.status(500).json({ message: "Failed to issue token" });
+      return res.redirect('http://localhost:5173/login?error=token_generation_failed');
     }
   })(req, res, next);
 }
