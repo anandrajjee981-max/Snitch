@@ -1,0 +1,382 @@
+// Theme Variables
+$clay-deep: #4e3629;
+$clay-hover: #3d2b20;
+$beige-warm: #f7f3ee;
+$sand-accent: #c3b091;
+$sand-light: #e6dfd5;
+$cream-surface: #fffdfb;
+
+$text-dark: #2c1e16;
+$text-muted: #7e6e65;
+$text-light: #f7f3ee;
+
+$radius-ios-card: 24px;
+$radius-menu: 16px;
+$radius-pill: 9999px;
+
+$shadow-inset: inset 0 2px 8px rgba(78, 54, 41, 0.04);
+$shadow-card: 0 10px 30px -10px rgba(78, 54, 41, 0.08), 0 1px 3px rgba(78, 54, 41, 0.03);
+
+$glass-bg: rgba(255, 253, 251, 0.8);
+$glass-border: rgba(255, 255, 255, 0.5);
+$glass-blur: blur(20px);
+
+$transition-smooth: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+$transition-fast: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+$font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+$font-serif: 'Playfair Display', Georgia, serif;
+
+// --- RESPONSIVE STYLE RULES ---
+
+.form-wrapper {
+  min-height: 100vh;
+  background-color: $beige-warm;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  // Mobile: tight spacing, Desktop: spacious padding
+  padding: 16px; 
+  
+  @media (min-width: 768px) {
+    padding: 48px 24px;
+  }
+}
+
+.form-container {
+  background: $cream-surface;
+  width: 100%;
+  max-width: 580px; // Standard sleek limit for elegant form reading width
+  border-radius: $radius-ios-card;
+  box-shadow: $shadow-card;
+  border: 1px solid $glass-border;
+  backdrop-filter: $glass-blur;
+  background-color: $glass-bg;
+  
+  // Mobile vs Desktop Inside Padding
+  padding: 24px 16px;
+  
+  @media (min-width: 480px) {
+    padding: 36px 30px;
+  }
+  
+  @media (min-width: 768px) {
+    padding: 48px;
+  }
+
+  .form-header {
+    text-align: center;
+    margin-bottom: 24px;
+
+    @media (min-width: 768px) {
+      margin-bottom: 36px;
+    }
+  }
+
+  .form-title {
+    font-family: $font-serif;
+    color: $clay-deep;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+
+    @media (min-width: 768px) {
+      font-size: 2.25rem;
+    }
+  }
+
+  .form-subtitle {
+    color: $text-muted;
+    font-size: 0.9rem;
+    line-height: 1.4;
+
+    @media (min-width: 768px) {
+      font-size: 0.98rem;
+    }
+  }
+}
+
+.product-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  @media (min-width: 768px) {
+    gap: 24px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: $text-dark;
+      display: flex;
+      justify-content: space-between;
+
+      .label-count {
+        color: $text-muted;
+        font-weight: normal;
+      }
+    }
+
+    input[type="text"],
+    textarea,
+    input[type="number"] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px 16px;
+      font-size: 0.95rem;
+      font-family: $font-sans;
+      background-color: $cream-surface;
+      border: 1px solid $sand-light;
+      border-radius: $radius-menu;
+      color: $text-dark;
+      box-shadow: $shadow-inset;
+      transition: $transition-fast;
+
+      &:focus {
+        outline: none;
+        border-color: $clay-deep;
+        box-shadow: 0 0 0 4px rgba($clay-deep, 0.06);
+      }
+
+      @media (min-width: 768px) {
+        padding: 16px 20px;
+        font-size: 1rem;
+      }
+    }
+  }
+
+  // Double Columns (Price + Currency) on Desktop, Stacked on Mobile
+  .price-currency-row {
+    display: grid;
+    grid-template-columns: 1.8fr 1.2fr;
+    gap: 12px;
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr; // Mobile single column
+      gap: 18px;
+    }
+  }
+
+  // Custom Selector Styles
+  .select-wrapper {
+    position: relative;
+    width: 100%;
+
+    select {
+      width: 100%;
+      appearance: none;
+      padding: 14px 16px;
+      font-size: 0.95rem;
+      font-family: $font-sans;
+      background-color: $cream-surface;
+      border: 1px solid $sand-light;
+      border-radius: $radius-menu;
+      color: $text-dark;
+      cursor: pointer;
+      box-shadow: $shadow-inset;
+      transition: $transition-fast;
+
+      &:focus {
+        outline: none;
+        border-color: $clay-deep;
+      }
+
+      @media (min-width: 768px) {
+        padding: 16px 20px;
+        font-size: 1rem;
+      }
+    }
+
+    &::after {
+      content: '▾';
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $clay-deep;
+      pointer-events: none;
+      font-size: 0.9rem;
+    }
+  }
+
+  // Fully Responsive Image Drop Area
+  .drag-drop-zone {
+    border: 2px dashed $sand-accent;
+    border-radius: $radius-menu;
+    background-color: rgba($cream-surface, 0.6);
+    padding: 24px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: $transition-fast;
+
+    @media (min-width: 768px) {
+      padding: 32px 24px;
+    }
+
+    &:hover {
+      background-color: rgba($sand-light, 0.25);
+      border-color: $clay-deep;
+    }
+
+    &.dragging {
+      border-color: $clay-deep;
+      background-color: rgba($sand-accent, 0.15);
+      transform: scale(0.995);
+    }
+
+    &.disabled {
+      border-color: $sand-light;
+      background-color: rgba($sand-light, 0.1);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .zone-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+
+      .upload-icon {
+        width: 28px;
+        height: 28px;
+        stroke: $clay-deep;
+
+        @media (min-width: 768px) {
+          width: 32px;
+          height: 32px;
+        }
+      }
+
+      .zone-text {
+        color: $text-dark;
+        font-size: 0.9rem;
+        margin: 0;
+
+        @media (min-width: 768px) {
+          font-size: 0.98rem;
+        }
+
+        .desktop-only {
+          display: none;
+          
+          @media (min-width: 768px) {
+            display: inline;
+          }
+        }
+
+        .cta-link {
+          font-weight: 600;
+          text-decoration: underline;
+          color: $clay-deep;
+        }
+      }
+
+      .limit-subtitle {
+        font-size: 0.75rem;
+        color: $text-muted;
+      }
+    }
+  }
+
+  // Previews Grid (Optimized for both Mobile touch targets & Desktop layout)
+  .preview-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); // 4 items per row on mobile
+    gap: 8px;
+    margin-top: 12px;
+
+    @media (min-width: 480px) {
+      grid-template-columns: repeat(6, 1fr); // 6 items on tablet
+      gap: 10px;
+    }
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(7, 1fr); // Beautiful full list on desktop
+      gap: 12px;
+    }
+
+    .preview-card {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid $sand-light;
+      box-shadow: $shadow-card;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .remove-btn {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+        background: rgba($clay-deep, 0.9);
+        color: $text-light;
+        border: none;
+        width: 18px;
+        height: 18px;
+        border-radius: $radius-pill;
+        font-size: 11px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: $transition-fast;
+
+        @media (min-width: 768px) {
+          width: 22px;
+          height: 22px;
+          font-size: 13px;
+        }
+
+        &:hover {
+          background: $clay-hover;
+          transform: scale(1.1);
+        }
+      }
+    }
+  }
+
+  // Submit/Publish Button (Actionable & fluid layout)
+  .submit-btn {
+    margin-top: 8px;
+    width: 100%;
+    background-color: $clay-deep;
+    color: $text-light;
+    padding: 15px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: $radius-pill;
+    cursor: pointer;
+    box-shadow: $shadow-card;
+    transition: $transition-fast;
+
+    @media (min-width: 768px) {
+      padding: 18px;
+      font-size: 1.05rem;
+    }
+
+    &:hover {
+      background-color: $clay-hover;
+      transform: translateY(-2px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}

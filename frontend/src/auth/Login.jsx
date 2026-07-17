@@ -61,9 +61,16 @@ export default function Login() {
       alert('Please fill out all fields.');
       return;
     }
+
     const res = await handlelogin(email, password);
+    const userRole = res?.data?.user?.role || res?.res?.user?.role;
+
     if (res && res.success) {
-      navigate('/dashboard');
+      if (userRole?.toLowerCase() === 'seller') {
+        navigate('/sellerdashboard');
+      } else {
+        navigate('/dashboard');
+      }
     }
   };
 

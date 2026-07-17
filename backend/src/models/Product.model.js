@@ -20,14 +20,14 @@ currency :{
     default:"INR"
 }
 },
-user :{
+seller :{
 type :mongoose.Types.ObjectId,
 ref:"User",
 required :true 
 
 },
 image :{
-    type :String ,
+    type :[String],
     required :true
 }
 

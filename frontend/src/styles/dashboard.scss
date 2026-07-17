@@ -1,0 +1,186 @@
+// Theme Colors (Consistent with the Form styling)
+$clay-deep: #4e3629;
+$clay-hover: #3d2b20;
+$beige-warm: #f7f3ee;
+$sand-accent: #c3b091;
+$sand-light: #e6dfd5;
+$cream-surface: #fffdfb;
+
+$text-dark: #2c1e16;
+$text-muted: #7e6e65;
+$text-light: #f7f3ee;
+
+$radius-ios-card: 24px;
+$radius-menu: 16px;
+$radius-pill: 9999px;
+
+$shadow-card: 0 10px 30px -10px rgba(78, 54, 41, 0.08), 0 1px 3px rgba(78, 54, 41, 0.03);
+
+$glass-bg: rgba(255, 253, 251, 0.8);
+$glass-border: rgba(255, 255, 255, 0.5);
+$glass-blur: blur(20px);
+
+$transition-smooth: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+$transition-fast: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+$font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+$font-serif: 'Playfair Display', Georgia, serif;
+
+// --- DASHBOARD RESPONSIVE STYLE ---
+
+.dashboard-wrapper {
+  min-height: 100vh;
+  background-color: $beige-warm;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px 16px;
+
+  @media (min-width: 768px) {
+    padding: 64px 32px;
+  }
+}
+
+.dashboard-container {
+  width: 100%;
+  max-width: 860px; // Spaced beautifully for dual horizontal grid cards
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+
+  @media (min-width: 768px) {
+    gap: 48px;
+  }
+
+  .dashboard-header {
+    text-align: center;
+
+    .dashboard-title {
+      font-family: $font-serif;
+      color: $clay-deep;
+      font-size: 2.2rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+
+      @media (min-width: 768px) {
+        font-size: 2.8rem;
+      }
+    }
+
+    .dashboard-subtitle {
+      color: $text-muted;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      max-width: 480px;
+      margin: 0 auto;
+
+      @media (min-width: 768px) {
+        font-size: 1.05rem;
+      }
+    }
+  }
+}
+
+// 2 Columns on Desktop, 1 Stacked Column on Mobile
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+  }
+}
+
+// Interactive Premium Dashboard Cards
+.dashboard-card {
+  background: $cream-surface;
+  border-radius: $radius-ios-card;
+  border: 1px solid $glass-border;
+  backdrop-filter: $glass-blur;
+  background-color: $glass-bg;
+  padding: 32px 24px;
+  cursor: pointer;
+  box-shadow: $shadow-card;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  transition: $transition-smooth;
+
+  @media (min-width: 768px) {
+    padding: 40px 32px;
+  }
+
+  // Hover states mimicking high-end UI
+  &:hover {
+    transform: translateY(-6px);
+    background-color: $cream-surface;
+    border-color: $clay-deep;
+    box-shadow: 0 20px 40px -15px rgba(78, 54, 41, 0.12);
+
+    .card-icon-wrapper {
+      background-color: $clay-deep;
+      color: $text-light;
+      transform: rotate(5deg) scale(1.05);
+    }
+
+    .card-action-btn {
+      color: $clay-hover;
+      padding-left: 8px;
+    }
+  }
+
+  // Clay styling for icons container
+  .card-icon-wrapper {
+    background-color: rgba($clay-deep, 0.06);
+    color: $clay-deep;
+    padding: 14px;
+    border-radius: $radius-menu;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: $transition-smooth;
+  }
+
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    h3 {
+      font-family: $font-sans;
+      color: $text-dark;
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin: 0;
+
+      @media (min-width: 768px) {
+        font-size: 1.4rem;
+      }
+    }
+
+    p {
+      color: $text-muted;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin: 0;
+
+      @media (min-width: 768px) {
+        font-size: 0.95rem;
+      }
+    }
+  }
+
+  // Mini Action Link
+  .card-action-btn {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $clay-deep;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    transition: $transition-fast;
+    margin-top: auto; // Pushes link to the bottom of the card
+  }
+}

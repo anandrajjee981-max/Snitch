@@ -7,8 +7,8 @@ import passport from 'passport';
 async function generateToken(user, res) {
   // jwt.sign is synchronous by default unless given a callback
   const token = jwt.sign(
-    { id: user._id ,
-      role :user.role
+    { id: user._id 
+      
     }, 
     Config.JWT_SECRET, 
     { expiresIn: "1d" }
@@ -140,7 +140,8 @@ export function googleAuthCallback(req, res, next) {
       console.log('Authenticated user from Google:', user.email || user.username || user._id);
       await generateToken(user, res);
 
-      return res.redirect('http://localhost:5173/dashboard'); 
+      const redirectPath = user.role === 'seller' ? '/sellerdashboard' : '/dashboard';
+      return res.redirect(`http://localhost:5173${redirectPath}`); 
     } catch (tokenErr) {
       console.error('Token generation error:', tokenErr);
       return res.redirect('http://localhost:5173/login?error=token_generation_failed');

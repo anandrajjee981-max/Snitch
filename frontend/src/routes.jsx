@@ -6,6 +6,8 @@ import ProductDetails from './components/ProductDetails';
 import Login from './auth/Login';
 import Register from './auth/Register';
 import { AnimatePresence, motion } from 'framer-motion';
+import Productform from './seller/service/pages/Productform';
+import Sellerdashboard from './seller/service/pages/Seller.dashboard';
 
 // Page wrapper for smooth route transitions
 const PageWrapper = ({ children }) => (
@@ -65,7 +67,22 @@ export default function AppRoutes({ activeCategory, setActiveCategory }) {
             </PageWrapper>
           } 
         />
+           <Route 
+          path="/sellerform" 
+          element={
+            <PageWrapper>
+            <Productform/>
+            </PageWrapper>
+          } 
+        />
+             <Route 
+          path="/sellerdashboard" 
+          element={
+           <Sellerdashboard/>
+          } 
+        />
       </Routes>
+
     </AnimatePresence>
   );
 }
