@@ -60,7 +60,7 @@ const Sellerdashboard = () => {
           {/* Action 2: My Products */}
           <div 
             className="dashboard-card action-inventory"
-            onClick={() => navigate('/my-products')} // Apne route ke hisab se modify kar sakte ho
+            onClick={() => navigate('/sellerproduct')} // Apne route ke hisab se modify kar sakte ho
           >
             <div className="card-icon-wrapper">
               <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

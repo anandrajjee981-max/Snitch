@@ -8,6 +8,7 @@ import Register from './auth/Register';
 import { AnimatePresence, motion } from 'framer-motion';
 import Productform from './seller/service/pages/Productform';
 import Sellerdashboard from './seller/service/pages/Seller.dashboard';
+import SellerProduct from './seller/service/pages/SellerProduct';
 
 // Page wrapper for smooth route transitions
 const PageWrapper = ({ children }) => (
@@ -79,6 +80,12 @@ export default function AppRoutes({ activeCategory, setActiveCategory }) {
           path="/sellerdashboard" 
           element={
            <Sellerdashboard/>
+          } 
+        />
+         <Route 
+          path="/sellerproduct" 
+          element={
+          <SellerProduct/>
           } 
         />
       </Routes>
