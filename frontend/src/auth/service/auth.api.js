@@ -24,7 +24,15 @@ return res.data
         console.log(err)
     }
 }
-
+export async function getme(){
+    try{
+const res = await api.get("/auth/getme")
+return res.data
+    }
+    catch(err){
+        console.log(err)
+    }
+}
 
 
 

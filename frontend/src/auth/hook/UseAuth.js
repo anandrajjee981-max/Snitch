@@ -1,4 +1,4 @@
-import { register,login } from "../service/auth.api";
+import { register,login, getme } from "../service/auth.api";
 import { authStart,authFailure,authSuccess } from "../auth.slice";
 import { useDispatch } from "react-redux";
 
@@ -32,8 +32,21 @@ const useauth = () => {
       return { success: false, error: message };
     }
   }
+  async function handlegetme(){
+    dispatch(authStart)
+try{
+const res = getme()
+dispatch(authSuccess(res.data))
+}
+catch(err){
+    const message = err?.message || 'Login failed';
+      dispatch(authFailure(message));
+}
 
-  return { handleregister, handlelogin };
+
+  }
+
+  return { handleregister, handlelogin ,handlegetme };
 };
 
 export default useauth;

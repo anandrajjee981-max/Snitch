@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   products: [],
+  userallproduct: []
 };
 
 const productSlice = createSlice({
@@ -11,8 +12,13 @@ const productSlice = createSlice({
     addproduct: (state, action) => {
       state.products.push(action.payload);
     },
+    allproductuser: (state, action) => {
+      state.userallproduct = Array.isArray(action.payload)
+        ? action.payload
+        : [];
+    }
   },
 });
 
-export const { addproduct } = productSlice.actions;
+export const { addproduct ,allproductuser} = productSlice.actions;
 export default productSlice.reducer;

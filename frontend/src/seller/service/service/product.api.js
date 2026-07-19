@@ -9,5 +9,8 @@ export async function submitProducts(productData) {
   return api.post('/seller/post', productData);
 }
 export async function getproduct(){
-    return api.get('/seller/get')
+  return api.get('/seller/get');
+}
+export async function allproduct(){
+  return api.get('/buyer/get');
 }

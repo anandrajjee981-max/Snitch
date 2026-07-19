@@ -541,9 +541,74 @@ ul {
       transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
+    .image-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 8;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.9);
+      color: $clay-deep;
+      box-shadow: 0 10px 24px rgba(78, 54, 41, 0.15);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      backdrop-filter: blur(8px);
+
+      &:hover {
+        transform: translateY(-50%) scale(1.04);
+      }
+    }
+
+    .image-nav-btn-left {
+      left: 12px;
+    }
+
+    .image-nav-btn-right {
+      right: 12px;
+    }
+
+    .image-dots {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 8;
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.7);
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .dot.active {
+        width: 20px;
+        border-radius: 999px;
+        background: $cream-surface;
+      }
+    }
+
     // Hover effect on the image
     &:hover img {
       transform: scale(1.06);
+    }
+
+    &:hover .image-nav-btn {
+      opacity: 1;
+      pointer-events: auto;
     }
   }
 

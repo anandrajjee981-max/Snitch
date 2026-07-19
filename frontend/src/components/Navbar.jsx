@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
+// import { useCart } from '../context/CartContext';
 import { ShoppingBag, Search, User, Menu, X } from 'lucide-react';
 
 export default function Navbar({ activeCategory, setActiveCategory }) {
   const navigate = useNavigate();
-  const { toggleCart, cartCount } = useCart();
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -82,10 +82,10 @@ export default function Navbar({ activeCategory, setActiveCategory }) {
           <Link to="/login" className="icon-btn" aria-label="Account">
             <User size={20} />
           </Link>
-          <button className="icon-btn" onClick={toggleCart} aria-label="Shopping Bag">
+          {/* <button className="icon-btn" onClick={toggleCart} aria-label="Shopping Bag">
             <ShoppingBag size={20} />
             {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
-          </button>
+          </button> */}
           <button 
             className="icon-btn menu-mobile-btn" 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

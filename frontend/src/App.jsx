@@ -1,34 +1,18 @@
 import React, { useState } from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import { CartProvider } from './context/CartContext';
-import Navbar from './components/Navbar';
-import CartDrawer from './components/CartDrawer';
-import AppRoutes from './routes';
+import Navbar from './components/Navbar'
 
-function MainApp() {
-  const [activeCategory, setActiveCategory] = useState('All');
 
-  return (
-    <>
-      <Navbar
-        activeCategory={activeCategory}
-        setActiveCategory={setActiveCategory}
-      />
-      <AppRoutes
-        activeCategory={activeCategory}
-        setActiveCategory={setActiveCategory}
-      />
-      <CartDrawer />
-    </>
-  );
-}
+import {router} from './routes'
+import { RouterProvider } from 'react-router-dom'
 
 export default function App() {
+    const [activeCategory, setActiveCategory] = useState('All');
   return (
-    <BrowserRouter>
-      <CartProvider>
-        <MainApp />
-      </CartProvider>
-    </BrowserRouter>
+  <RouterProvider  router={router}>
+  <Navbar 
+        activeCategory={activeCategory} 
+        setActiveCategory={setActiveCategory} 
+      />
+  </RouterProvider>
   );
 }

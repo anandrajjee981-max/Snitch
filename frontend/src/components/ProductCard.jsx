@@ -1,18 +1,59 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
-import { MoreHorizontal, ShoppingCart, Eye, Share2 } from 'lucide-react';
+// import { useCart } from '../context/CartContext'; 
+import { MoreHorizontal, ShoppingCart, Eye, Share2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
+import { useSelector } from 'react-redux'; // Redux state direct access karne ke liye
+import '../styles/productcard.scss';
 
-export default function ProductCard({ product }) {
+export default function ProductCard() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   const cardRef = useRef(null);
   const dotsBtnRef = useRef(null);
   const dropdownRef = useRef(null);
+
+  // 1. Direct Redux Store se current individual product data uthao
+  const rawProduct = useSelector((state) => state.products.userallproduct);
+
+  // 2. Data fallbacks parse karo agar data load hone me time le rha ho
+  if (!rawProduct) {
+    return <div className="product-card-loading">Loading product...</div>;
+  }
+
+  // Agar Redux array bhej rha hai toh pehla element le lo, varna direct object use karo
+  const productData = Array.isArray(rawProduct) ? rawProduct[0] : rawProduct;
+
+  // 3. Database structure mapping variables (No destructuring needed in parent)
+  const productId = productData._id || productData.id;
+  const productTitle = productData.title || 'Untitled Product';
+  const productDesc = productData.description || '';
+  const productCategory = productData.category || 'Apparel';
+  const priceAmount = productData.productprice?.price || productData.price || 0;
+  const currencySymbol = productData.productprice?.currency === 'INR' || productData.currency === 'INR' ? '₹' : '$';
+  
+  // 4. Multiple Images Handle setup (7+ images array navigation support)
+  const galleryImages = Array.isArray(productData.image) ? productData.image : [productData.image];
+  const activeImage = galleryImages[activeImageIndex] || 'https://placehold.co/600x600';
+
+  // Slider controls
+  const handlePrevImage = (e) => {
+    e.stopPropagation(); 
+    setActiveImageIndex((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1));
+  };
+
+  const handleNextImage = (e) => {
+    e.stopPropagation(); 
+    setActiveImageIndex((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1));
+  };
+
+  const handleImageError = (e) => {
+    e.target.src = 'https://placehold.co/600x600';
+  };
 
   // 3D Tilt Effect on Hover
   const handleMouseMove = (e) => {
@@ -22,11 +63,9 @@ export default function ProductCard({ product }) {
     const width = rect.width;
     const height = rect.height;
 
-    // Mouse coordinates relative to card center
     const x = e.clientX - rect.left - width / 2;
     const y = e.clientY - rect.top - height / 2;
 
-    // Calculate rotation (-10 to 10 degrees)
     const rotateY = (x / (width / 2)) * 10;
     const rotateX = -(y / (height / 2)) * 10;
 
@@ -89,15 +128,15 @@ export default function ProductCard({ product }) {
   }, [isMenuOpen]);
 
   const handleCardClick = (e) => {
-    // Prevent navigating if clicking the floating dots button or its dropdown
     if (
       (dotsBtnRef.current && dotsBtnRef.current.contains(e.target)) ||
       (dropdownRef.current && dropdownRef.current.contains(e.target)) ||
-      e.target.closest('.btn-add-cart-minimal')
+      e.target.closest('.btn-add-cart-minimal') || 
+      e.target.closest('.image-nav-btn')
     ) {
       return;
     }
-    navigate(`/product/${product.id}`);
+    navigate(`/product/${productId}`);
   };
 
   return (
@@ -111,21 +150,60 @@ export default function ProductCard({ product }) {
         style={{ cursor: 'pointer' }}
       >
         <div className="image-zone">
-          <img src={product.image} alt={product.title} />
+          <img src={activeImage} alt={productTitle} onError={handleImageError} />
 
-          {/* Three-dots menu container */}
+          {/* Slider chevrons tab logic for multi-image array */}
+          {galleryImages.length > 1 && (
+            <>
+              <button
+                type="button"
+                className="image-nav-btn image-nav-btn-left"
+                onClick={handlePrevImage}
+                aria-label="Previous image"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                type="button"
+                className="image-nav-btn image-nav-btn-right"
+                onClick={handleNextImage}
+                aria-label="Next image"
+              >
+                <ChevronRight size={18} />
+              </button>
+
+              <div className="image-dots" aria-label="Product image gallery">
+                {galleryImages.map((_, index) => (
+                  <button
+                    key={`${productId}-${index}`}
+                    type="button"
+                    className={`dot ${index === activeImageIndex ? 'active' : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveImageIndex(index);
+                    }}
+                    aria-label={`Show image ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Context Options floating button */}
           <button 
             className="ios-dots-btn glass-panel"
             ref={dotsBtnRef}
             onMouseEnter={handleDotsEnter}
             onMouseLeave={handleDotsLeave}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsMenuOpen(!isMenuOpen);
+            }}
             aria-label="Product options"
           >
             <MoreHorizontal />
           </button>
 
-          {/* iOS Dropdown with Framer Motion AnimatePresence */}
           <AnimatePresence>
             {isMenuOpen && (
               <motion.div 
@@ -138,27 +216,30 @@ export default function ProductCard({ product }) {
               >
                 <button 
                   className="dropdown-item" 
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setIsMenuOpen(false);
-                    navigate(`/product/${product.id}`);
+                    navigate(`/product/${productId}`);
                   }}
                 >
                   <Eye /> View Details
                 </button>
                 <button 
                   className="dropdown-item" 
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setIsMenuOpen(false);
-                    addToCart(product);
+                    addToCart(productData);
                   }}
                 >
                   <ShoppingCart /> Add to Cart
                 </button>
                 <button 
                   className="dropdown-item" 
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setIsMenuOpen(false);
-                    navigator.clipboard.writeText(`${window.location.origin}/#/product/${product.id}`);
+                    navigator.clipboard.writeText(`${window.location.origin}/#/product/${productId}`);
                     alert('Product link copied to clipboard!');
                   }}
                 >
@@ -170,14 +251,19 @@ export default function ProductCard({ product }) {
         </div>
 
         <div className="info-zone">
-          <span className="product-category">{product.category}</span>
-          <h3 className="product-title">{product.title}</h3>
+          <span className="product-category">{productCategory}</span>
+          <h3 className="product-title">{productTitle}</h3>
           
           <div className="product-meta">
-            <span className="product-price">${product.price.toFixed(2)}</span>
+            <span className="product-price">
+              {currencySymbol}{priceAmount.toLocaleString()}
+            </span>
             <button 
               className="btn-add-cart-minimal"
-              onClick={() => addToCart(product)}
+              onClick={(e) => {
+                e.stopPropagation();
+                addToCart(productData);
+              }}
             >
               Add +
             </button>

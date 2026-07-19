@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useCart } from '../context/CartContext';
 import { ArrowLeft, ShoppingBag, Heart, Shield, RefreshCw } from 'lucide-react';
-import { PRODUCTS } from './ProductGrid';
+
 import { motion } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';

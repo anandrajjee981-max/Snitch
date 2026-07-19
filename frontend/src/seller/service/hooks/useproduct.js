@@ -1,5 +1,5 @@
-import { getproduct, submitProducts } from "../service/product.api";
-import { addproduct } from '../product.slice';
+import { getproduct, submitProducts , allproduct} from "../service/product.api";
+import { addproduct ,allproductuser} from '../product.slice';
 import { useDispatch } from "react-redux";
 
 const useproduct = () => {
@@ -31,8 +31,19 @@ const useproduct = () => {
       throw error; 
     }
   };
+const handleuserproduct = async () => {
+  const res = await allproduct();
+  const products = Array.isArray(res.data?.product)
+    ? res.data.product
+    : Array.isArray(res.data)
+      ? res.data
+      : [];
 
-  return { handleaddproduct, handlegetproduct };
+  dispatch(allproductuser(products));
+};
+
+
+  return { handleaddproduct, handlegetproduct ,handleuserproduct };
 };
 
 export default useproduct;

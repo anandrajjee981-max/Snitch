@@ -20,6 +20,7 @@ const GoogleIcon = () => (
 );
 import gsap from 'gsap';
 import useauth from './hook/UseAuth';
+import Navbar from '../components/Navbar';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -82,6 +83,7 @@ export default function Login() {
 
   return (
     <div className="auth-page-container">
+      <Navbar/>
       <div className="auth-card glass-panel" ref={cardRef}>
         <div className="auth-header">
           <span className="auth-tag">Welcome Back</span>

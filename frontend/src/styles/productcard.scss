@@ -1,0 +1,276 @@
+// Variables & Design Tokens
+$card-bg: rgba(255, 255, 255, 0.75);
+$glass-border: rgba(255, 255, 255, 0.4);
+$glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+$text-primary: #1a1a1a;
+$text-muted: #666666;
+$accent-color: #706555; // Minimal elegant earth tone
+$radius-lg: 24px;
+$radius-sm: 12px;
+$transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+.product-card-container {
+  padding: 1.5rem;
+  perspective: 1000px; // Smooth 3D animations support
+  
+  .product-card-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: $text-muted;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+}
+
+.product-card {
+  background: $card-bg;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid $glass-border;
+  border-radius: $radius-lg;
+  box-shadow: $glass-shadow;
+  padding: 12px;
+  transition: box-shadow 0.4s ease, transform 0.1s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+
+  &:hover {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+    
+    .image-zone {
+      .image-nav-btn {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+      }
+    }
+  }
+
+  // --- Image Core Layout ---
+  .image-zone {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: calc(#{$radius-lg} - 4px);
+    overflow: hidden;
+    background-color: #f5f5f3;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    // --- Slider Chevrons ---
+    .image-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%) scale(0.9);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      color: $text-primary;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: $transition-smooth;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+      &:hover {
+        background: #ffffff;
+        color: $accent-color;
+      }
+
+      &-left {
+        left: 12px;
+      }
+
+      &-right {
+        right: 12px;
+      }
+    }
+
+    // --- Bottom Image Indicators ---
+    .image-dots {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.08);
+      padding: 6px 10px;
+      border-radius: 20px;
+      backdrop-filter: blur(4px);
+
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        transition: $transition-smooth;
+
+        &.active {
+          background: #ffffff;
+          width: 14px;
+          border-radius: 4px;
+        }
+      }
+    }
+
+    // --- Floating iOS Menu Trigger ---
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    }
+
+    .ios-dots-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $text-primary;
+      cursor: pointer;
+      z-index: 15;
+      border: none;
+      outline: none;
+
+      svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    // --- iOS Dropdown Configurations ---
+    .ios-dropdown-menu {
+      position: absolute;
+      top: 54px;
+      right: 12px;
+      width: 170px;
+      border-radius: $radius-sm;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      z-index: 20;
+      transform-origin: top right;
+
+      .dropdown-item {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: $text-primary;
+        border: none;
+        background: transparent;
+        border-radius: calc(#{$radius-sm} - 4px);
+        cursor: pointer;
+        text-align: left;
+        transition: background 0.2s ease;
+
+        svg {
+          width: 16px;
+          height: 16px;
+          color: $text-muted;
+        }
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.04);
+          
+          svg {
+            color: $accent-color;
+          }
+        }
+
+        &:active {
+          background: rgba(0, 0, 0, 0.08);
+        }
+      }
+    }
+  }
+
+  // --- Product Context Details Layer ---
+  .info-zone {
+    padding: 1rem 8px 4px 8px;
+
+    .product-category {
+      display: block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: $text-muted;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .product-title {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: $text-primary;
+      line-height: 1.4;
+      margin: 0 0 12px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .product-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .product-price {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: $text-primary;
+        letter-spacing: -0.02em;
+      }
+
+      .btn-add-cart-minimal {
+        background: transparent;
+        border: 1px solid $text-primary;
+        color: $text-primary;
+        padding: 6px 14px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: $transition-smooth;
+
+        &:hover {
+          background: $text-primary;
+          color: #ffffff;
+        }
+
+        &:active {
+          transform: scale(0.95);
+        }
+      }
+    }
+  }
+}
