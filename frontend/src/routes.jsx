@@ -41,17 +41,15 @@ export const router = createBrowserRouter([
       {
         path: "/dashboard",
         element: (
-          <Protected role="buyer">
-            <Dashboard />
-          </Protected>
+             <Dashboard />
         )
       },
       {
         path: "/product/:id",
         element: (
-          <Protected role="buyer">
+        
             <ProductDetails />
-          </Protected>
+         
         )
       }
     ]

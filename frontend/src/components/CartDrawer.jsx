@@ -2,6 +2,7 @@ import React from 'react';
 import { useCart } from './productroute.slice';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag, Plus, Minus, Trash2 } from 'lucide-react';
+import { useSelector } from 'react-redux';
 
 export default function CartDrawer() {
   const { 
@@ -24,6 +25,13 @@ export default function CartDrawer() {
     damping: 12,
     stiffness: 100
   };
+  const user = useSelector(state=>state.auth.user)
+  async function checklogin(){
+if(!user){
+  alert('need to login first...')
+}
+alert('Proceeding to checkout...')
+  }
 
   return (
     <AnimatePresence>
@@ -114,7 +122,7 @@ export default function CartDrawer() {
                     {cartTotal.toLocaleString()}
                   </span>
                 </div>
-                <button className="btn-checkout" onClick={() => alert('Proceeding to checkout...')}>
+                <button className="btn-checkout" onClick={checklogin}>
                   Checkout Now
                 </button>
                 <p className="shipping-info">Complimentary shipping on all orders over $75.</p>
