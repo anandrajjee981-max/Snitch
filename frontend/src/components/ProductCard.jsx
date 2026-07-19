@@ -1,13 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { useCart } from '../context/CartContext'; 
+import { useCart } from './productroute.slice'; 
 import { MoreHorizontal, ShoppingCart, Eye, Share2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
-import { useSelector } from 'react-redux'; // Redux state direct access karne ke liye
 import '../styles/productcard.scss';
 
-export default function ProductCard() {
+export default function ProductCard({ product }) {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -17,27 +16,24 @@ export default function ProductCard() {
   const dotsBtnRef = useRef(null);
   const dropdownRef = useRef(null);
 
-  // 1. Direct Redux Store se current individual product data uthao
-  const rawProduct = useSelector((state) => state.products.userallproduct);
-
-  // 2. Data fallbacks parse karo agar data load hone me time le rha ho
-  if (!rawProduct) {
-    return <div className="product-card-loading">Loading product...</div>;
+  const productData = product;
+  if (!productData) {
+    return null;
   }
 
-  // Agar Redux array bhej rha hai toh pehla element le lo, varna direct object use karo
-  const productData = Array.isArray(rawProduct) ? rawProduct[0] : rawProduct;
-
-  // 3. Database structure mapping variables (No destructuring needed in parent)
+  // Database structure mapping variables
   const productId = productData._id || productData.id;
   const productTitle = productData.title || 'Untitled Product';
-  const productDesc = productData.description || '';
   const productCategory = productData.category || 'Apparel';
   const priceAmount = productData.productprice?.price || productData.price || 0;
   const currencySymbol = productData.productprice?.currency === 'INR' || productData.currency === 'INR' ? '₹' : '$';
   
-  // 4. Multiple Images Handle setup (7+ images array navigation support)
-  const galleryImages = Array.isArray(productData.image) ? productData.image : [productData.image];
+  // Handle single or multiple images
+  const galleryImages = Array.isArray(productData.image) 
+    ? productData.image 
+    : productData.image 
+      ? [productData.image] 
+      : ['https://placehold.co/600x600'];
   const activeImage = galleryImages[activeImageIndex] || 'https://placehold.co/600x600';
 
   // Slider controls
@@ -152,7 +148,7 @@ export default function ProductCard() {
         <div className="image-zone">
           <img src={activeImage} alt={productTitle} onError={handleImageError} />
 
-          {/* Slider chevrons tab logic for multi-image array */}
+          {/* Slider controls for multi-image array */}
           {galleryImages.length > 1 && (
             <>
               <button
@@ -189,7 +185,7 @@ export default function ProductCard() {
             </>
           )}
 
-          {/* Context Options floating button */}
+          {/* Options button */}
           <button 
             className="ios-dots-btn glass-panel"
             ref={dotsBtnRef}
@@ -201,7 +197,7 @@ export default function ProductCard() {
             }}
             aria-label="Product options"
           >
-            <MoreHorizontal />
+            <MoreHorizontal size={18} />
           </button>
 
           <AnimatePresence>
@@ -222,7 +218,7 @@ export default function ProductCard() {
                     navigate(`/product/${productId}`);
                   }}
                 >
-                  <Eye /> View Details
+                  <Eye size={16} /> View Details
                 </button>
                 <button 
                   className="dropdown-item" 
@@ -232,18 +228,18 @@ export default function ProductCard() {
                     addToCart(productData);
                   }}
                 >
-                  <ShoppingCart /> Add to Cart
+                  <ShoppingCart size={16} /> Add to Cart
                 </button>
                 <button 
                   className="dropdown-item" 
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsMenuOpen(false);
-                    navigator.clipboard.writeText(`${window.location.origin}/#/product/${productId}`);
+                    navigator.clipboard.writeText(`${window.location.origin}/product/${productId}`);
                     alert('Product link copied to clipboard!');
                   }}
                 >
-                  <Share2 /> Share
+                  <Share2 size={16} /> Share
                 </button>
               </motion.div>
             )}

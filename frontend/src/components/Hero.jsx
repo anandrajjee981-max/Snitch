@@ -33,29 +33,29 @@ export default function Hero() {
       <div className="hero-bg-accent"></div>
       
       <div className="hero-content">
-        <span className="hero-tag" ref={tagRef}>Honest Skincare</span>
+        <span className="hero-tag" ref={tagRef}>Street Culture</span>
         <h1 className="hero-title" ref={titleRef}>
-          Nurture your skin with <span>natural clay</span> elements
+          Elevate your vibe with <span>Premium Street</span> fits
         </h1>
         <p className="hero-desc" ref={descRef}>
-          A curated collection of organic skincare formulated with earth-born clay, active botanicals, and deep hydration complexes. Designed to restore your skin's natural radiance and tone.
+          Discover our latest streetwear drop featuring heavy-weight cotton hoodies, cargo pants, and drop-shoulder graphic tees. Engineered for street style, built for extreme comfort.
         </p>
         <div className="hero-actions" ref={actionsRef}>
-          <a href="#storefront" className="btn-primary">Explore Products</a>
-          <a href="#about" className="btn-secondary">Our Philosophy</a>
+          <a href="#storefront" className="btn-primary">Shop Streetwear</a>
+          <a href="#storefront" className="btn-secondary">New Drops</a>
         </div>
       </div>
 
       <div className="hero-gallery">
         <div className="hero-main-img-wrapper" ref={mainImgRef}>
-          <img src="/clay_mask.png" alt="Clay Face Mask Jar" />
+          <img src="/streetwear_hoodie.png" alt="Premium Oversized Streetwear Hoodie" />
         </div>
         <div className="hero-sub-img-wrapper" ref={subImgRef}>
-          <img src="/face_serum.png" alt="Facial Serum Amber Bottle" />
+          <img src="/streetwear_tee.png" alt="Drop Shoulder Graphic Tee" />
         </div>
         <div className="hero-stat-badge glass-panel" ref={badgeRef}>
           <span className="num">100%</span>
-          <span className="label">Organic & Vegan</span>
+          <span className="label">Heavyweight Cotton</span>
         </div>
       </div>
     </section>

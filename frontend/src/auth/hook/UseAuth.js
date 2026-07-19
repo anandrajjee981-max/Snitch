@@ -33,7 +33,7 @@ const useauth = () => {
     }
   }
   async function handlegetme(){
-    dispatch(authStart)
+    dispatch(authStart())
 try{
 const res = getme()
 dispatch(authSuccess(res.data))

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCart } from '../context/CartContext';
+import { useCart } from './productroute.slice';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag, Plus, Minus, Trash2 } from 'lucide-react';
 
@@ -59,40 +59,49 @@ export default function CartDrawer() {
                 <div className="cart-empty">
                   <ShoppingBag size={48} />
                   <h3>Your bag is empty</h3>
-                  <p>Explore our products and find the perfect routine for your skin.</p>
+                  <p>Explore our products and find the perfect additions to your wardrobe.</p>
                 </div>
               ) : (
-                cart.map((item) => (
-                  <div className="cart-item" key={item.id}>
-                    <div className="item-img-wrapper">
-                      <img src={item.image} alt={item.title} />
-                    </div>
-                    <div className="item-details">
-                      <div className="item-top">
-                        <h4 className="item-name">{item.title}</h4>
-                        <button 
-                          className="btn-remove-item" 
-                          onClick={() => removeFromCart(item.id)}
-                          aria-label="Remove item"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                cart.map((item) => {
+                  const itemId = item._id || item.id;
+                  const itemPrice = item.productprice?.price || item.price || 0;
+                  const itemCurrency = item.productprice?.currency === 'INR' || item.currency === 'INR' ? '₹' : '$';
+                  const itemImage = Array.isArray(item.image) ? item.image[0] : item.image;
+                  
+                  return (
+                    <div className="cart-item" key={itemId}>
+                      <div className="item-img-wrapper">
+                        <img src={itemImage || 'https://placehold.co/150'} alt={item.title} />
                       </div>
-                      <div className="item-bottom">
-                        <div className="quantity-controller">
-                          <button onClick={() => updateQuantity(item.id, -1)} aria-label="Decrease quantity">
-                            <Minus size={12} />
-                          </button>
-                          <span>{item.quantity}</span>
-                          <button onClick={() => updateQuantity(item.id, 1)} aria-label="Increase quantity">
-                            <Plus size={12} />
+                      <div className="item-details">
+                        <div className="item-top">
+                          <h4 className="item-name">{item.title}</h4>
+                          <button 
+                            className="btn-remove-item" 
+                            onClick={() => removeFromCart(itemId)}
+                            aria-label="Remove item"
+                          >
+                            <Trash2 size={16} />
                           </button>
                         </div>
-                        <span className="item-price">${(item.price * item.quantity).toFixed(2)}</span>
+                        <div className="item-bottom">
+                          <div className="quantity-controller">
+                            <button onClick={() => updateQuantity(itemId, -1)} aria-label="Decrease quantity">
+                              <Minus size={12} />
+                            </button>
+                            <span>{item.quantity}</span>
+                            <button onClick={() => updateQuantity(itemId, 1)} aria-label="Increase quantity">
+                              <Plus size={12} />
+                            </button>
+                          </div>
+                          <span className="item-price">
+                            {itemCurrency}{(itemPrice * item.quantity).toLocaleString()}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
 
@@ -100,7 +109,10 @@ export default function CartDrawer() {
               <div className="cart-footer">
                 <div className="summary-row">
                   <span className="label">Total amount:</span>
-                  <span className="value">${cartTotal.toFixed(2)}</span>
+                  <span className="value">
+                    {cart[0]?.productprice?.currency === 'INR' || cart[0]?.currency === 'INR' ? '₹' : '$'}
+                    {cartTotal.toLocaleString()}
+                  </span>
                 </div>
                 <button className="btn-checkout" onClick={() => alert('Proceeding to checkout...')}>
                   Checkout Now

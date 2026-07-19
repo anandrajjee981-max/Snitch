@@ -77,7 +77,7 @@ export async function login(req, res) {
     const { email, password } = req.body;
     
     // 2. Use findOne instead of find
-    const user = await usermodel.findOne({ email: email });
+    const user = await usermodel.findOne({ email: email }).select("+password");
     if (!user) {
       return res.status(404).json({
         message: "Email does not exist"
@@ -148,3 +148,22 @@ export function googleAuthCallback(req, res, next) {
     }
   })(req, res, next);
 }
+export async function getme(req,res){
+  try{
+    const user = await usermodel.findById(req.user.id)
+    if(!user){
+        return res.status(404).json({message: "User not found"})
+    } 
+
+    res.status(200).json({
+      message:"user information",
+      user
+    })
+
+  }
+  catch(err){
+    console.log(err)
+  }
+}
+
+
