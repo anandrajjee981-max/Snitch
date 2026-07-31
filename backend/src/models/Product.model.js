@@ -29,7 +29,43 @@ required :true
 image :{
     type :[String],
     required :true
+},
+variants:[
+{
+    images: [
+     {
+      url: {
+        type: String
+       
+     }
+      }
+            ],
+    stock:{
+        type:Number ,
+        default:0
+    },
+    attribute:{
+        type:Map,
+        of:String
+    },
+productprice:{
+price:{
+    type:Number
+  
+},
+currency:{
+    type:String,
+      enum :["INR","USD",'YEN'],
+    default:"INR"
 }
+}
+
+
+}
+
+
+
+]
 
 
 })

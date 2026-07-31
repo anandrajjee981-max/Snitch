@@ -238,6 +238,23 @@ $transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    // Variants available badge — top-left corner of image
+    .variants-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(112, 101, 85, 0.9);
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      z-index: 15;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
 
     .product-meta {
       display: flex;

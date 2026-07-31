@@ -18,6 +18,10 @@ export default function ProductDetails() {
 
   const products = useSelector((state) => state.products.userallproduct);
   const [loading, setLoading] = useState(products.length === 0);
+  useEffect(()=>{
+    console.log(products);
+    
+  },[])
 
   // Fetch products if store is empty
   useEffect(() => {
@@ -39,7 +43,12 @@ export default function ProductDetails() {
 
   const product = products.find((p) => (p._id || p.id).toString() === productId.toString());
 
-  const [selectedSize, setSelectedSize] = useState(null);
+  const variants = Array.isArray(product?.variants) ? product.variants : [];
+  const hasVariants = variants.length > 0;
+
+  // null = no variant selected → show base product; a number = show that variant
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState(null);
+  const [selectedSize, setSelectedSize] = useState('M');
   const [isLiked, setIsLiked] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -47,16 +56,18 @@ export default function ProductDetails() {
   const imageRef = useRef(null);
   const detailsRef = useRef(null);
 
-  // Stagger details elements entrance using GSAP
+  // Reset to base product (no variant) whenever we navigate to a different product
+  useEffect(() => {
+    setSelectedVariantIndex(null);
+    setActiveImageIndex(0);
+  }, [productId]);
+
+  // Entrance animation
   useEffect(() => {
     if (!product) return;
     
-    // Reset selections when product changes
-    setSelectedSize('M');
     setIsLiked(false);
     setActiveImageIndex(0);
-
-    // Scroll to top of window when view loads
     window.scrollTo(0, 0);
 
     const ctx = gsap.context(() => {
@@ -95,29 +106,88 @@ export default function ProductDetails() {
     );
   }
 
+  const activeVariant = (hasVariants && selectedVariantIndex !== null && variants[selectedVariantIndex])
+    ? variants[selectedVariantIndex]
+    : null;
+
+  // Extract gallery images for active variant or fallback to base product images
+  let variantImageUrls = [];
+  if (activeVariant && Array.isArray(activeVariant.images) && activeVariant.images.length > 0) {
+    variantImageUrls = activeVariant.images
+      .map(img => {
+        if (typeof img === 'string') return img;
+        return img?.url || img?.secure_url || img?.image || '';
+      })
+      .filter(Boolean);
+  }
+
+  const galleryImages = variantImageUrls.length > 0 
+    ? variantImageUrls 
+    : Array.isArray(product.image) 
+      ? product.image 
+      : product.image 
+        ? [product.image] 
+        : ['https://placehold.co/600x600'];
+
+  const mainImage = galleryImages[activeImageIndex] || galleryImages[0] || 'https://placehold.co/600x600';
+
+  // Dynamic price & currency calculation
+  const currentPriceObj = activeVariant?.productprice || product.productprice;
+  const priceAmount = currentPriceObj?.price !== undefined ? currentPriceObj.price : (product.price || 0);
+  const currencySymbol = (currentPriceObj?.currency === 'INR' || product.currency === 'INR') ? '₹' : '$';
+
+  // Dynamic stock check
+  const isOutOfStock = activeVariant ? (activeVariant.stock <= 0) : false;
+
+  // Helper to extract variant label (e.g. Size: XL)
+  const getVariantLabel = (v) => {
+    if (!v || !v.attribute) return 'Option';
+    let attr = v.attribute;
+    if (attr instanceof Map) {
+      attr = Object.fromEntries(attr);
+    }
+    if (typeof attr === 'object') {
+      const entries = Object.entries(attr);
+      if (entries.length > 0) {
+        return entries.map(([k, val]) => `${k}: ${val}`).join(' | ');
+      }
+    }
+    return 'Option';
+  };
+
+  const handleAddToCart = () => {
+    if (isOutOfStock) {
+      alert("Selected variant is currently out of stock!");
+      return;
+    }
+
+    if (activeVariant) {
+      const label = getVariantLabel(activeVariant);
+      const variantId = activeVariant._id || selectedVariantIndex;
+      const cartItem = {
+        ...product,
+        id: `${product._id || product.id}-${variantId}`,
+        _id: `${product._id || product.id}-${variantId}`,
+        title: `${product.title} (${label})`,
+        productprice: activeVariant.productprice || product.productprice,
+        price: priceAmount,
+        currency: currentPriceObj?.currency || 'INR',
+        image: galleryImages[0],
+        selectedVariant: activeVariant
+      };
+      addToCart(cartItem);
+    } else {
+      const productToAdd = selectedSize 
+        ? { ...product, id: `${product._id || product.id}-${selectedSize}`, title: `${product.title} (${selectedSize})` }
+        : product;
+      addToCart(productToAdd);
+    }
+  };
+
   // Recommended products (excluding active product)
   const recommendations = products
     .filter((p) => p.category === product.category && (p._id || p.id).toString() !== (product._id || product.id).toString())
     .slice(0, 3);
-
-  const priceAmount = product.productprice?.price || product.price || 0;
-  const currencySymbol = product.productprice?.currency === 'INR' || product.currency === 'INR' ? '₹' : '$';
-  
-  // Handle multi-image gallery
-  const galleryImages = Array.isArray(product.image) 
-    ? product.image 
-    : product.image 
-      ? [product.image] 
-      : ['https://placehold.co/600x600'];
-  const mainImage = galleryImages[activeImageIndex] || 'https://placehold.co/600x600';
-
-  const handleAddToCart = () => {
-    // Incorporate size details in cart if applicable
-    const productToAdd = selectedSize 
-      ? { ...product, id: `${product._id || product.id}-${selectedSize}`, title: `${product.title} (${selectedSize})` }
-      : product;
-    addToCart(productToAdd);
-  };
 
   const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
 
@@ -139,7 +209,7 @@ export default function ProductDetails() {
             <span>Back to collection</span>
           </button>
           <span className="details-breadcrumbs">
-            Shop / {product.category || 'Streetwear'} / {product.title}
+            Shop / {product.category || 'Apparel'} / {product.title}
           </span>
         </div>
 
@@ -170,32 +240,125 @@ export default function ProductDetails() {
 
           {/* Text & Buying Zone */}
           <div className="details-info-zone" ref={detailsRef}>
-            <span className="info-category">{product.category || 'Streetwear'}</span>
+            <span className="info-category">{product.category || 'Apparel'}</span>
             <h1 className="info-title">{product.title}</h1>
             <div className="info-price">{currencySymbol}{priceAmount.toLocaleString()}</div>
-            <p className="info-desc">{product.description || 'Premium street fit tailored with top-tier heavyweight fabrics.'}</p>
+            <p className="info-desc">{product.description || 'Premium fit tailored with top-tier heavyweight fabrics.'}</p>
 
-            {/* Sizes section */}
-            <div className="info-sizes-section">
-              <span className="section-title">Select Size</span>
-              <div className="sizes-selector-grid">
-                {sizes.map((size) => (
-                  <button
-                    key={size}
-                    className={`size-pill ${selectedSize === size ? 'selected' : ''}`}
-                    onClick={() => setSelectedSize(size)}
-                  >
-                    {size}
-                  </button>
-                ))}
+            {/* Dynamic Variant Selector or Standard Size Selector */}
+            {hasVariants ? (
+              <div className="info-sizes-section">
+                <span className="section-title">Select Variant</span>
+                <div style={{ display: 'flex', gap: '0.7rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+
+                  {/* ── MAIN PRODUCT as first thumbnail (null = base selected) ── */}
+                  {(() => {
+                    const mainThumb = Array.isArray(product.image) ? product.image[0] : product.image || 'https://placehold.co/100x120';
+                    const isSelected = selectedVariantIndex === null;
+                    return (
+                      <button
+                        key="main-product"
+                        onClick={() => { setSelectedVariantIndex(null); setActiveImageIndex(0); }}
+                        title="Main Product"
+                        style={{
+                          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px',
+                          padding: '4px', background: 'transparent',
+                          border: isSelected ? '2px solid #4e3629' : '2px solid transparent',
+                          borderRadius: '10px', cursor: 'pointer',
+                          transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+                          boxShadow: isSelected ? '0 0 0 1px #4e3629' : 'none',
+                        }}
+                      >
+                        <div style={{ width: '64px', height: '80px', borderRadius: '7px', overflow: 'hidden', background: '#f3f3f1', border: '1px solid #e2ddd8' }}>
+                          <img src={mainThumb} alt="Main" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        </div>
+                        <span style={{
+                          fontSize: '0.65rem', fontWeight: 600,
+                          color: isSelected ? '#4e3629' : '#666',
+                          textAlign: 'center', maxWidth: '64px',
+                          lineHeight: 1.2, overflow: 'hidden',
+                          textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>Default</span>
+                      </button>
+                    );
+                  })()}
+
+                  {/* ── EACH VARIANT thumbnail ── */}
+                  {variants.map((v, idx) => {
+                    const label = getVariantLabel(v);
+                    const isSelected = selectedVariantIndex === idx;
+                    const isStockOut = v.stock <= 0;
+
+                    let vThumb = null;
+                    if (Array.isArray(v.images) && v.images.length > 0) {
+                      const imgObj = v.images[0];
+                      vThumb = typeof imgObj === 'string' ? imgObj : (imgObj?.url || imgObj?.secure_url || '');
+                    }
+                    if (!vThumb) {
+                      vThumb = Array.isArray(product.image) ? product.image[0] : product.image || 'https://placehold.co/100x120';
+                    }
+
+                    return (
+                      <button
+                        key={v._id || idx}
+                        onClick={() => { if (!isStockOut) { setSelectedVariantIndex(idx); setActiveImageIndex(0); } }}
+                        disabled={isStockOut}
+                        title={isStockOut ? 'Out of Stock' : label}
+                        style={{
+                          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px',
+                          padding: '4px', background: 'transparent',
+                          border: isSelected ? '2px solid #4e3629' : '2px solid transparent',
+                          borderRadius: '10px',
+                          cursor: isStockOut ? 'not-allowed' : 'pointer',
+                          opacity: isStockOut ? 0.4 : 1,
+                          transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+                          boxShadow: isSelected ? '0 0 0 1px #4e3629' : 'none',
+                        }}
+                      >
+                        <div style={{ width: '64px', height: '80px', borderRadius: '7px', overflow: 'hidden', background: '#f3f3f1', border: '1px solid #e2ddd8' }}>
+                          <img src={vThumb} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        </div>
+                        <span style={{
+                          fontSize: '0.65rem', fontWeight: 600,
+                          color: isSelected ? '#4e3629' : '#666',
+                          textAlign: 'center', maxWidth: '64px',
+                          lineHeight: 1.2, overflow: 'hidden',
+                          textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>
+                          {isStockOut ? '✕ Sold' : label}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="info-sizes-section">
+                <span className="section-title">Select Size</span>
+                <div className="sizes-selector-grid">
+                  {sizes.map((size) => (
+                    <button
+                      key={size}
+                      className={`size-pill ${selectedSize === size ? 'selected' : ''}`}
+                      onClick={() => setSelectedSize(size)}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* CTA purchase block */}
             <div className="info-buying-actions">
-              <button className="btn-purchase-main" onClick={handleAddToCart}>
+              <button 
+                className="btn-purchase-main" 
+                onClick={handleAddToCart}
+                disabled={isOutOfStock}
+                style={{ opacity: isOutOfStock ? 0.6 : 1, cursor: isOutOfStock ? 'not-allowed' : 'pointer' }}
+              >
                 <ShoppingBag size={20} />
-                <span>Add to Bag</span>
+                <span>{isOutOfStock ? 'Out of Stock' : 'Add to Bag'}</span>
               </button>
               <button 
                 className={`btn-wishlist ${isLiked ? 'liked' : ''}`} 

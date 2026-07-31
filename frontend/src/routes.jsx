@@ -8,6 +8,7 @@ import Register from './auth/Register';
 import Productform from './seller/service/pages/Productform';
 import Sellerdashboard from './seller/service/pages/Seller.dashboard';
 import SellerProduct from './seller/service/pages/SellerProduct';
+import Productdetail from './seller/service/pages/Productdetail';
 import Protected from './components/Protected';
 import Dashboard from './buyer/a';
 
@@ -77,5 +78,14 @@ export const router = createBrowserRouter([
         <SellerProduct />
       </Protected>
     )
+  },
+  {
+    path: "/seller/product/:id",
+    element: (
+      <Protected role="seller">
+        <Productdetail />
+      </Protected>
+    )
   }
 ]);
+

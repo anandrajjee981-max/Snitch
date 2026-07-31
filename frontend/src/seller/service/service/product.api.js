@@ -14,3 +14,10 @@ export async function getproduct(){
 export async function allproduct(){
   return api.get('/buyer/get');
 }
+export async function submitVariant(productId, variantData) {
+  return api.post(`/seller/variant/${productId}`, variantData);
+}
+export async function getSellerProductById(productId) {
+  return api.get(`/seller/get/${productId}`);
+}
+
