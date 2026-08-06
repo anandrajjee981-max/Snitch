@@ -7,7 +7,7 @@ const Productdetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { handlesubmitvariant, handlegetproductbyid } = useproduct();
+  const { handlesubmitvariant, handlegetproductbyid, handleeditvariantstock } = useproduct();
 
   const [product, setProduct] = useState(location.state?.product || null);
   const [loading, setLoading] = useState(!location.state?.product);
@@ -24,6 +24,8 @@ const Productdetail = () => {
   const [price, setPrice] = useState('');
   const [currency, setCurrency] = useState('INR');
   const [stock, setStock] = useState(0);
+  const [editingVariantStockId, setEditingVariantStockId] = useState(null);
+  const [editVariantStockValue, setEditVariantStockValue] = useState("");
   const [attributes, setAttributes] = useState([{ key: 'Size', value: '' }]);
   const [images, setImages] = useState([]); // [{ file: File, preview: string }]
 
@@ -176,6 +178,21 @@ const Productdetail = () => {
       setErrorMsg(err.response?.data?.message || 'Failed to add variant. Please try again.');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleUpdateVariantStock = async (variantId) => {
+    if (editVariantStockValue === '') return;
+    try {
+      const result = await handleeditvariantstock(product._id, variantId, { stock: Number(editVariantStockValue) });
+      if (result) {
+        setSuccessMsg('Variant stock updated successfully!');
+        setEditingVariantStockId(null);
+        fetchProductDetails();
+      }
+    } catch (err) {
+      console.error("Error updating variant stock:", err);
+      setErrorMsg(err.response?.data?.message || 'Failed to update variant stock.');
     }
   };
 
@@ -508,9 +525,36 @@ const Productdetail = () => {
                         {v.productprice?.currency === 'INR' ? '₹' : v.productprice?.currency || '$'}
                         {v.productprice?.price || product.productprice?.price || 0}
                       </span>
-                      <span className={`v-stock ${v.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
-                        {v.stock > 0 ? `Stock: ${v.stock}` : 'Out of Stock'}
-                      </span>
+                      {editingVariantStockId === (v._id || idx) ? (
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          <input 
+                            type="number" 
+                            value={editVariantStockValue} 
+                            onChange={(e) => setEditVariantStockValue(e.target.value)} 
+                            style={{ width: '60px', padding: '2px 4px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '12px' }} 
+                            min="0"
+                          />
+                          <button onClick={() => handleUpdateVariantStock(v._id)} style={{ padding: '2px 8px', background: '#4e3629', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}>Save</button>
+                          <button onClick={() => setEditingVariantStockId(null)} style={{ padding: '2px 8px', background: '#ccc', color: '#333', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}>Cancel</button>
+                        </div>
+                      ) : (
+                        <span className={`v-stock ${v.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
+                          {v.stock > 0 ? `Stock: ${v.stock}` : 'Out of Stock'}
+                          <button 
+                            onClick={() => {
+                              setEditingVariantStockId(v._id || idx);
+                              setEditVariantStockValue(v.stock || 0);
+                            }}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', marginLeft: '8px', color: '#666', display: 'inline-flex', alignItems: 'center' }}
+                            title="Edit Stock"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                              <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                            </svg>
+                          </button>
+                        </span>
+                      )}
                     </div>
 
                     {attrEntries.length > 0 && (

@@ -10,6 +10,7 @@ const Productform = () => {
     description: '',
     price: '',
     currency: 'INR',
+    stock: '',
   });
   const [images, setImages] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -104,6 +105,7 @@ const handleSubmit = async (e) => {
   dataToSend.append('description', formData.description);
   dataToSend.append('price', formData.price);
   dataToSend.append('currency', formData.currency);
+  dataToSend.append('stock', formData.stock || 0);
 
   // 3. Append your file objects
   // Note: 'images' is the key name your backend probably looks for (e.g., upload.array('images'))
@@ -151,7 +153,7 @@ const handleSubmit = async (e) => {
             />
           </div>
 
-          {/* Row 2: Price & Currency Grouped */}
+          {/* Row 2: Price, Currency & Stock Grouped */}
           <div className="price-currency-row animate-field">
             <div className="form-group">
               <label htmlFor="price">Price</label>
@@ -183,6 +185,21 @@ const handleSubmit = async (e) => {
                 </select>
               </div>
             </div>
+          </div>
+
+          {/* Stock Section */}
+          <div className="form-group animate-field">
+            <label htmlFor="stock">Stock Quantity</label>
+            <input
+              type="number"
+              id="stock"
+              name="stock"
+              placeholder="e.g. 100"
+              value={formData.stock}
+              onChange={handleInputChange}
+              min="0"
+              required
+            />
           </div>
 
           {/* Row 3: Description */}

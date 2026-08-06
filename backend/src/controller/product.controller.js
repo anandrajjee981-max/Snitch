@@ -3,7 +3,7 @@ import { uploadimage } from '../service/imagekit.service.js'
 
 export async function submitproduct(req, res) {
   try {
-    const { title, description, price, currency } = req.body;
+    const { title, description, price, currency,stock } = req.body;
     
     // 1. FIX: Seller ki poori object ki jagah uski ID nikal li
     const sellerId = req.user._id; 
@@ -161,5 +161,124 @@ export async function submitvariant(req, res) {
   }
 }
 
+export async function editproduct(req, res) {
+  try {
+    const seller = req.user?._id || req.user;
+    const { productid } = req.params;
+    const { title, description, price, currency, stock, keepImages } = req.body;
 
+    const product = await productmodel.findOne({ _id: productid, seller: seller });
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    if (title) product.title = title;
+    if (description) product.description = description;
+    if (price !== undefined && price !== '') {
+      product.productprice = product.productprice || {};
+      product.productprice.price = Number(price);
+    }
+    if (currency) {
+      product.productprice = product.productprice || {};
+      product.productprice.currency = currency;
+    }
+    if (stock !== undefined && stock !== '') {
+      product.stock = Number(stock);
+    }
+
+    // Process images to keep
+    let imagesToKeep = [];
+    if (keepImages) {
+      imagesToKeep = Array.isArray(keepImages) ? keepImages : [keepImages];
+    } else if (!req.files || req.files.length === 0) {
+      imagesToKeep = product.image || [];
+    }
+
+    // Upload any new images
+    let newUploadedUrls = [];
+    if (req.files && req.files.length > 0) {
+      newUploadedUrls = await Promise.all(
+        req.files.map(async (file) => {
+          return await uploadimage({
+            buffer: file.buffer,
+            filename: file.originalname
+          });
+        })
+      );
+    }
+
+    const finalImages = [...imagesToKeep, ...newUploadedUrls];
+    if (finalImages.length > 0) {
+      product.image = finalImages;
+    }
+
+    const updatedproduct = await product.save();
+    return res.status(200).json({
+      message: "Product updated successfully",
+      product: updatedproduct
+    });
+  } catch (err) {
+    console.error("Error in editproduct:", err);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: err.message
+    });
+  }
+}
+
+export async function editstock(req, res) {
+  try {
+    const seller = req.user?._id || req.user;
+    const { productid } = req.params;
+    const { stock } = req.body;
+
+    const product = await productmodel.findOne({ _id: productid, seller: seller });
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    product.stock = Number(stock) || 0;
+    const updatedproduct = await product.save();
+    return res.status(200).json({
+      message: "Stock updated successfully",
+      product: updatedproduct
+    });
+  } catch (err) {
+    console.error("Error in editstock:", err);
+    return res.status(500).json({
+      message: "Internal server error"
+    });
+  }
+}
+
+export async function editvariantstock(req, res) {
+  try {
+    const seller = req.user?._id || req.user;
+    const { productid, variantid } = req.params;
+    const { stock } = req.body; 
+
+    const product = await productmodel.findOne({ _id: productid, seller: seller });
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    } 
+
+    const variant = product.variants.find(v => v._id.toString() === variantid);
+    if (!variant) {
+      return res.status(404).json({ message: "Variant not found" });
+    }
+
+    variant.stock = Number(stock) || 0;
+    const updatedproduct = await product.save();
+    return res.status(200).json({
+      message: "Variant stock updated successfully",
+      product: updatedproduct
+    });
+  }
+  catch (err) {
+    console.error("Error in editvariantstock:", err);
+    return res.status(500).json({
+      message: "Internal server error"
+    });
+  }
+}
 

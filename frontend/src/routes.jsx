@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createBrowserRouter, Outlet } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import CartDrawer from './components/CartDrawer';
+import CartDrawer from './cart/CartDrawer';
 import ProductDetails from './components/ProductDetails';
 import Login from './auth/Login';
 import Register from './auth/Register';
@@ -9,6 +9,7 @@ import Productform from './seller/service/pages/Productform';
 import Sellerdashboard from './seller/service/pages/Seller.dashboard';
 import SellerProduct from './seller/service/pages/SellerProduct';
 import Productdetail from './seller/service/pages/Productdetail';
+import EditProduct from './seller/service/pages/EditProduct';
 import Protected from './components/Protected';
 import Dashboard from './buyer/a';
 
@@ -84,6 +85,14 @@ export const router = createBrowserRouter([
     element: (
       <Protected role="seller">
         <Productdetail />
+      </Protected>
+    )
+  },
+  {
+    path: "/seller/edit/:id",
+    element: (
+      <Protected role="seller">
+        <EditProduct />
       </Protected>
     )
   }

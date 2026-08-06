@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCart } from './productroute.slice';
+import usecart from '../cart/hooks/usecart';
 import { MoreHorizontal, ShoppingCart, Eye, Share2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
@@ -8,7 +8,7 @@ import '../styles/productcard.scss';
 
 export default function ProductCard({ product }) {
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { addtocartapi } = usecart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -58,7 +58,7 @@ export default function ProductCard({ product }) {
   // ─── Cart ─────────────────────────────────────────────────────────────────────
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    addToCart(product);
+    addtocartapi(productId, 1);
   };
 
   // ─── GSAP 3D tilt ─────────────────────────────────────────────────────────────
@@ -187,7 +187,7 @@ export default function ProductCard({ product }) {
                 <button className="dropdown-item" onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); navigate(`/product/${productId}`); }}>
                   <Eye size={16} /> View Details
                 </button>
-                <button className="dropdown-item" onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); addToCart(product); }}>
+                <button className="dropdown-item" onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); addtocartapi(productId, 1); }}>
                   <ShoppingCart size={16} /> Add to Cart
                 </button>
                 <button className="dropdown-item" onClick={(e) => {

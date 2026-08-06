@@ -1,4 +1,4 @@
-import { getproduct, submitProducts, allproduct, submitVariant, getSellerProductById } from "../service/product.api";
+import { getproduct, submitProducts, allproduct, submitVariant, getSellerProductById, editproduct, editstock, editvariantstock } from "../service/product.api";
 import { addproduct ,allproductuser} from '../product.slice';
 import { useDispatch } from "react-redux";
 
@@ -62,8 +62,37 @@ const useproduct = () => {
       throw error;
     }
   };
+  
+  const handleeditproduct = async (productId, formData) => {
+    try {
+      const response = await editproduct(productId, formData);
+      return response.data;
+    } catch (error) {
+      console.error("Error editing product:", error);
+      throw error; 
+    }
+  };
 
-  return { handleaddproduct, handlegetproduct, handleuserproduct, handlesubmitvariant, handlegetproductbyid };
+  const handleeditstock = async (productId, data) => {
+    try {
+      const response = await editstock(productId, data);
+      return response.data;
+    } catch (error) {
+      console.error("Error editing stock:", error);
+      throw error;
+    }
+  };
+  const handleeditvariantstock = async (productId, variantId, data) => {
+    try {
+      const response = await editvariantstock(productId, variantId, data);  
+      return response.data;
+    } catch (error) { 
+      console.error("Error editing variant stock:", error);
+      throw error;
+    }
+  };
+
+  return { handleaddproduct, handlegetproduct, handleuserproduct, handlesubmitvariant, handlegetproductbyid, handleeditproduct, handleeditstock, handleeditvariantstock };
 };
 
-export default useproduct;
+export default useproduct;

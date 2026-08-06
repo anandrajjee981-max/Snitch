@@ -46,31 +46,10 @@ const cartSlice = createSlice({
   },
 });
 
+import usecart from '../cart/hooks/usecart';
+
 export const { addToCart, removeFromCart, updateQuantity, toggleCart, closeCart, openCart } = cartSlice.actions;
 export const cartReducer = cartSlice.reducer;
 
-export const useCart = () => {
-  const dispatch = useDispatch();
-  const cart = useSelector((state) => state.cart.cart);
-  const isCartOpen = useSelector((state) => state.cart.isCartOpen);
+export const useCart = usecart;
 
-  const cartTotal = cart.reduce((total, item) => {
-    const price = item.productprice?.price || item.price || 0;
-    return total + price * item.quantity;
-  }, 0);
-
-  const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
-
-  return {
-    cart,
-    isCartOpen,
-    cartTotal,
-    cartCount,
-    addToCart: (item) => dispatch(addToCart(item)),
-    removeFromCart: (id) => dispatch(removeFromCart(id)),
-    updateQuantity: (id, amount) => dispatch(updateQuantity({ id, amount })),
-    toggleCart: () => dispatch(toggleCart()),
-    closeCart: () => dispatch(closeCart()),
-    openCart: () => dispatch(openCart()),
-  };
-};

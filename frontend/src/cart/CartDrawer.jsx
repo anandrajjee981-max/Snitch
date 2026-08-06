@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCart } from './productroute.slice';
+import usecart from './hooks/usecart';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag, Plus, Minus, Trash2 } from 'lucide-react';
 import { useSelector } from 'react-redux';
@@ -9,10 +9,11 @@ export default function CartDrawer() {
     cart, 
     isCartOpen, 
     closeCart, 
-    updateQuantity, 
-    removeFromCart, 
-    cartTotal 
-  } = useCart();
+    addtocartapi,
+    cartTotal,
+    removecartitemapi,
+    updateCartQuantityApi 
+  } = usecart();
 
   const drawerVariants = {
     closed: { x: '100%' },
@@ -27,10 +28,11 @@ export default function CartDrawer() {
   };
   const user = useSelector(state=>state.auth.user)
   async function checklogin(){
-if(!user){
-  alert('need to login first...')
-}
-alert('Proceeding to checkout...')
+    if(!user){
+      alert('need to login first...')
+      return;
+    }
+    alert('Proceeding to checkout...')
   }
 
   return (
@@ -56,7 +58,7 @@ alert('Proceeding to checkout...')
             transition={springTransition}
           >
             <div className="cart-header">
-              <h2>Your Bag ({cart.reduce((a, b) => a + b.quantity, 0)})</h2>
+              <h2>Your Bag ({cart.reduce((a, b) => a + (b.quantity || 1), 0)})</h2>
               <button className="btn-close-drawer" onClick={closeCart} aria-label="Close cart">
                 <X size={24} />
               </button>
@@ -71,22 +73,29 @@ alert('Proceeding to checkout...')
                 </div>
               ) : (
                 cart.map((item) => {
-                  const itemId = item._id || item.id;
-                  const itemPrice = item.productprice?.price || item.price || 0;
-                  const itemCurrency = item.productprice?.currency === 'INR' || item.currency === 'INR' ? '₹' : '$';
-                  const itemImage = Array.isArray(item.image) ? item.image[0] : item.image;
+                  const itemId = item._id || item.productid || item.id;
+                  const details = item.productDetails;
+                  const title = details?.title || item.title || 'Product';
+                  const itemPrice = details?.price ?? item.productprice?.price ?? item.price ?? item.product?.price ?? 0;
+                  const itemCurrency = (details?.currency === 'INR' || item.currency === 'INR' || item.product?.currency === 'INR') ? '₹' : '$';
+                  const itemImage = (details?.images && details.images.length > 0)
+                    ? details.images[0]
+                    : (Array.isArray(item.image) ? item.image[0] : item.image);
+
+                  const quantity = item.quantity || 1;
+                  const productId = item.productid || item._id;
                   
                   return (
                     <div className="cart-item" key={itemId}>
                       <div className="item-img-wrapper">
-                        <img src={itemImage || 'https://placehold.co/150'} alt={item.title} />
+                        <img src={itemImage || 'https://placehold.co/150'} alt={title} />
                       </div>
                       <div className="item-details">
                         <div className="item-top">
-                          <h4 className="item-name">{item.title}</h4>
+                          <h4 className="item-name">{title}</h4>
                           <button 
                             className="btn-remove-item" 
-                            onClick={() => removeFromCart(itemId)}
+                            onClick={() => removecartitemapi(productId)}
                             aria-label="Remove item"
                           >
                             <Trash2 size={16} />
@@ -94,16 +103,23 @@ alert('Proceeding to checkout...')
                         </div>
                         <div className="item-bottom">
                           <div className="quantity-controller">
-                            <button onClick={() => updateQuantity(itemId, -1)} aria-label="Decrease quantity">
+                            <button onClick={() => {
+                              const newQty = quantity - 1;
+                              if (newQty <= 0) {
+                                removecartitemapi(productId);
+                              } else {
+                                updateCartQuantityApi(productId, newQty);
+                              }
+                            }} aria-label="Decrease quantity">
                               <Minus size={12} />
                             </button>
-                            <span>{item.quantity}</span>
-                            <button onClick={() => updateQuantity(itemId, 1)} aria-label="Increase quantity">
+                            <span>{quantity}</span>
+                            <button onClick={() => updateCartQuantityApi(productId, quantity + 1)} aria-label="Increase quantity">
                               <Plus size={12} />
                             </button>
                           </div>
                           <span className="item-price">
-                            {itemCurrency}{(itemPrice * item.quantity).toLocaleString()}
+                            {itemCurrency}{(itemPrice * quantity).toLocaleString()}
                           </span>
                         </div>
                       </div>
@@ -118,8 +134,7 @@ alert('Proceeding to checkout...')
                 <div className="summary-row">
                   <span className="label">Total amount:</span>
                   <span className="value">
-                    {cart[0]?.productprice?.currency === 'INR' || cart[0]?.currency === 'INR' ? '₹' : '$'}
-                    {cartTotal.toLocaleString()}
+                    ₹{cartTotal.toLocaleString()}
                   </span>
                 </div>
                 <button className="btn-checkout" onClick={checklogin}>

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import gsap from 'gsap';
-import { useCart } from './productroute.slice';
+import usecart from '../cart/hooks/usecart';
 import useproduct from '../seller/service/hooks/useproduct';
 
 export default function ProductDetails() {
@@ -13,7 +13,7 @@ export default function ProductDetails() {
   const productId = id;
   const onBack = () => navigate('/dashboard');
   const onNavigateToProduct = (pid) => navigate(`/product/${pid}`);
-  const { addToCart } = useCart();
+  const { addtocartapi, addToCart } = usecart();
   const { handleuserproduct } = useproduct();
 
   const products = useSelector((state) => state.products.userallproduct);
@@ -65,23 +65,30 @@ export default function ProductDetails() {
   // Entrance animation
   useEffect(() => {
     if (!product) return;
-    
+
     setIsLiked(false);
     setActiveImageIndex(0);
     window.scrollTo(0, 0);
 
-    const ctx = gsap.context(() => {
-      gsap.fromTo(imageRef.current, 
-        { opacity: 0, scale: 0.95 },
-        { opacity: 1, scale: 1, duration: 1.2, ease: 'power4.out' }
-      );
+    const scope = containerRef.current;
+    if (!scope) return;
 
-      const items = detailsRef.current.children;
-      gsap.fromTo(items,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 1, stagger: 0.08, ease: 'power3.out', delay: 0.1 }
-      );
-    }, containerRef);
+    const ctx = gsap.context(() => {
+      if (imageRef.current) {
+        gsap.fromTo(imageRef.current,
+          { opacity: 0, scale: 0.95 },
+          { opacity: 1, scale: 1, duration: 1.2, ease: 'power4.out' }
+        );
+      }
+
+      const items = detailsRef.current?.children;
+      if (items && items.length > 0) {
+        gsap.fromTo(items,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 1, stagger: 0.08, ease: 'power3.out', delay: 0.1 }
+        );
+      }
+    }, scope);
 
     return () => ctx.revert();
   }, [productId, product]);
@@ -155,33 +162,15 @@ export default function ProductDetails() {
     return 'Option';
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (isOutOfStock) {
       alert("Selected variant is currently out of stock!");
       return;
     }
 
-    if (activeVariant) {
-      const label = getVariantLabel(activeVariant);
-      const variantId = activeVariant._id || selectedVariantIndex;
-      const cartItem = {
-        ...product,
-        id: `${product._id || product.id}-${variantId}`,
-        _id: `${product._id || product.id}-${variantId}`,
-        title: `${product.title} (${label})`,
-        productprice: activeVariant.productprice || product.productprice,
-        price: priceAmount,
-        currency: currentPriceObj?.currency || 'INR',
-        image: galleryImages[0],
-        selectedVariant: activeVariant
-      };
-      addToCart(cartItem);
-    } else {
-      const productToAdd = selectedSize 
-        ? { ...product, id: `${product._id || product.id}-${selectedSize}`, title: `${product.title} (${selectedSize})` }
-        : product;
-      addToCart(productToAdd);
-    }
+    // Pass variant _id if variant selected; otherwise pass main product _id
+    const targetId = activeVariant ? (activeVariant._id || activeVariant.id) : (product._id || product.id);
+    await addtocartapi(targetId, 1);
   };
 
   // Recommended products (excluding active product)
