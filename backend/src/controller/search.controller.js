@@ -1,4 +1,4 @@
-import productModel from '../models/product.model.js';
+import productmodel from "../models/Product.model.js";
 
 export const searchProducts = async (req, res) => {
   try {
@@ -28,13 +28,13 @@ export const searchProducts = async (req, res) => {
 
     // 3. Execute query with pagination and explicit field selection (including image)
     const [products, total] = await Promise.all([
-      productModel
+         productmodel
         .find(filter)
         .select('title description price image images category createdAt') // Ensure image/images fields are selected
         .skip(skip)
         .limit(Number(limit))
         .lean(), // Converts Mongoose Documents to plain JS objects for better performance
-      productModel.countDocuments(filter)
+      productmodel.countDocuments(filter)
     ]);
 
     return res.status(200).json({

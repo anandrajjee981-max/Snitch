@@ -16,7 +16,11 @@ app.use(express.json())
 app.use(cookie())
 
 // Allow frontend origin and credentials for cookies
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }))
+app.use(cors({ origin: [
+  "http://localhost:5173",
+  "https://snitch-indol.vercel.app"
+],
+  credentials: true }))
 
 // Initialize passport
 app.use(passport.initialize())
