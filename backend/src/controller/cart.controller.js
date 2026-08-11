@@ -122,24 +122,102 @@ export async function addtocart(req, res) {
 
 export async function getcart(req, res) {
   try {
-    let cart = await CartModel.findOne({ user: req.user._id });
+    const aggregationResult = await CartModel.aggregate([
+      { $match: { user: req.user._id } },
+      { $unwind: { path: '$items', preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: 'products',
+          let: {
+            selectedId: '$items.productid',
+            origin: '$items.origin'
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $or: [
+                    {
+                      $and: [
+                        { $eq: ['$$origin', 'Main'] },
+                        { $eq: [{ $toString: '$_id' }, '$$selectedId'] }
+                      ]
+                    },
+                    {
+                      $and: [
+                        { $eq: ['$$origin', 'Variant'] },
+                        {
+                          $in: [
+                            '$$selectedId',
+                            {
+                              $map: {
+                                input: '$variants',
+                                as: 'variant',
+                                in: { $toString: '$$variant._id' }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          as: 'productcart'
+        }
+      },
+      {
+        $addFields: {
+          productcart: { $ifNull: [{ $arrayElemAt: ['$productcart', 0] }, null] }
+        }
+      },
+      {
+        $addFields: {
+          'items.itemTotal': {
+            $multiply: [
+              {
+                $ifNull: ['$productcart.productprice.price', '$items.price']
+              },
+              '$items.quantity'
+            ]
+          }
+        }
+      },
+      {
+        $group: {
+          _id: '$_id',
+          user: { $first: '$user' },
+          items: { $push: '$items' },
+          totalQuantity: { $sum: '$items.quantity' },
+          totalCartAmount: { $sum: '$items.itemTotal' },
+          __v: { $first: '$__v' }
+        }
+      }
+    ], { maxTimeMS: 60000, allowDiskUse: true });
 
-    if (!cart) {
-      cart = await CartModel.create({ user: req.user._id, items: [] });
+    if (!aggregationResult.length) {
+      const createdCart = await CartModel.create({ user: req.user._id, items: [] });
+      const cartResponse = createdCart.toObject ? createdCart.toObject() : createdCart;
+      cartResponse.items = [];
       return res.status(200).json({
         message: 'cart fetched successfully',
-        cart
+        cart: cartResponse
       });
     }
 
+    const cart = aggregationResult[0];
     const cartResponse = cart.toObject ? cart.toObject() : cart;
-    cartResponse.items = await Promise.all(cart.items.map(buildCartItemResponse));
+    const items = Array.isArray(cartResponse.items) ? cartResponse.items : [];
+    cartResponse.items = await Promise.all(items.map(buildCartItemResponse));
 
     return res.status(200).json({
       message: 'cart fetched successfully',
       cart: cartResponse
     });
   } catch (err) {
+    console.error('Error in getcart:', err);
     return res.status(500).json({
       message: 'internal server error'
     });

@@ -11,8 +11,9 @@ const usecart = () => {
   async function getcartapi() {
     try {
       const res = await getcart();
-      if (res && res.cart && res.cart.items) {
-        dispatch(setcart(res.cart.items));
+      if (res && res.cart) {
+        const nextCartItems = Array.isArray(res.cart.items) ? res.cart.items : [];
+        dispatch(setcart(nextCartItems));
       }
     } catch (err) {
       console.error("Error fetching cart:", err);
@@ -22,8 +23,9 @@ const usecart = () => {
   async function addtocartapi(productid, quantity = 1) {
     try {
       const res = await addtocart(productid, quantity);
-      if (res && res.cart && res.cart.items) {
-        dispatch(addtocarts(res.cart.items));
+      if (res && res.cart) {
+        const nextCartItems = Array.isArray(res.cart.items) ? res.cart.items : [];
+        dispatch(addtocarts(nextCartItems));
       }
       await getcartapi();
       dispatch(openCart());
@@ -35,8 +37,9 @@ const usecart = () => {
   async function removecartitemapi(productid) {
     try {
       const res = await removecartitem(productid);
-      if (res && res.cart && res.cart.items) {
-        dispatch(addtocarts(res.cart.items));
+      if (res && res.cart) {
+        const nextCartItems = Array.isArray(res.cart.items) ? res.cart.items : [];
+        dispatch(addtocarts(nextCartItems));
       }
       await getcartapi();
     } catch (err) {
@@ -48,8 +51,9 @@ const usecart = () => {
   async function updateCartQuantityApi(productid, quantity) {
     try {
       const res = await updatecartquantity(productid, quantity);
-      if (res && res.cart && res.cart.items) {
-        dispatch(addtocarts(res.cart.items));
+      if (res && res.cart) {
+        const nextCartItems = Array.isArray(res.cart.items) ? res.cart.items : [];
+        dispatch(addtocarts(nextCartItems));
       }
       await getcartapi();
     } catch (err) {

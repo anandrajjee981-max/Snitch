@@ -8,8 +8,7 @@ export default function CartDrawer() {
   const { 
     cart, 
     isCartOpen, 
-    closeCart, 
-    addtocartapi,
+    closeCart,
     cartTotal,
     removecartitemapi,
     updateCartQuantityApi 
