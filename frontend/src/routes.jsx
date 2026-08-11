@@ -10,6 +10,7 @@ import Sellerdashboard from './seller/service/pages/Seller.dashboard';
 import SellerProduct from './seller/service/pages/SellerProduct';
 import Productdetail from './seller/service/pages/Productdetail';
 import EditProduct from './seller/service/pages/EditProduct';
+import SellerNavbar from './seller/service/pages/SellerNavbar';
 import Protected from './components/Protected';
 import Dashboard from './buyer/a';
 
@@ -23,6 +24,18 @@ const StorefrontLayout = () => {
       <CartDrawer />
       <div className="main-content-layout">
         <Outlet context={[activeCategory, setActiveCategory]} />
+      </div>
+    </>
+  );
+};
+
+// Layout for all seller-side pages — persistent SellerNavbar across all seller routes
+const SellerLayout = () => {
+  return (
+    <>
+      <SellerNavbar />
+      <div className="seller-layout-content">
+        <Outlet />
       </div>
     </>
   );
@@ -57,44 +70,32 @@ export const router = createBrowserRouter([
     ]
   },
   {
-    path: "/sellerform",
     element: (
       <Protected role="seller">
-        <Productform />
+        <SellerLayout />
       </Protected>
-    )
-  },
-  {
-    path: "/sellerdashboard",
-    element: (
-      <Protected role="seller">
-        <Sellerdashboard />
-      </Protected>
-    )
-  },
-  {
-    path: "/sellerproduct",
-    element: (
-      <Protected role="seller">
-        <SellerProduct />
-      </Protected>
-    )
-  },
-  {
-    path: "/seller/product/:id",
-    element: (
-      <Protected role="seller">
-        <Productdetail />
-      </Protected>
-    )
-  },
-  {
-    path: "/seller/edit/:id",
-    element: (
-      <Protected role="seller">
-        <EditProduct />
-      </Protected>
-    )
+    ),
+    children: [
+      {
+        path: "/sellerdashboard",
+        element: <Sellerdashboard />
+      },
+      {
+        path: "/sellerform",
+        element: <Productform />
+      },
+      {
+        path: "/sellerproduct",
+        element: <SellerProduct />
+      },
+      {
+        path: "/seller/product/:id",
+        element: <Productdetail />
+      },
+      {
+        path: "/seller/edit/:id",
+        element: <EditProduct />
+      }
+    ]
   }
 ]);
-

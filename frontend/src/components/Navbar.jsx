@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useCart } from './productroute.slice';
-import { ShoppingBag, Search, User, Menu, X } from 'lucide-react';
+import { ShoppingBag, Search, User } from 'lucide-react';
 import useSearch from './hooks/usesearch';
 
 export default function Navbar({ activeCategory, setActiveCategory }) {
@@ -21,10 +21,30 @@ export default function Navbar({ activeCategory, setActiveCategory }) {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Close mobile menu on resize to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 992) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isMobileMenuOpen]);
 
   useEffect(() => {
     if (showSearchBox) {
@@ -36,13 +56,13 @@ export default function Navbar({ activeCategory, setActiveCategory }) {
     if (setActiveCategory) setActiveCategory('All');
     navigate('/dashboard');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    setIsMobileMenuOpen(false);
   };
 
   const handleNavClick = (category) => {
     if (setActiveCategory) setActiveCategory(category);
     setIsMobileMenuOpen(false);
     navigate('/dashboard');
-
     setTimeout(() => {
       const element = document.getElementById('storefront');
       if (element) {
@@ -56,7 +76,6 @@ export default function Navbar({ activeCategory, setActiveCategory }) {
   const handleSearchToggle = () => {
     const nextState = !showSearchBox;
     setShowSearchBox(nextState);
-
     if (!nextState) {
       setSearchInput('');
       clearSearch();
@@ -66,12 +85,10 @@ export default function Navbar({ activeCategory, setActiveCategory }) {
   const handleSearchInput = (event) => {
     const query = event.target.value;
     setSearchInput(query);
-
     if (!query.trim()) {
       clearSearch();
       return;
     }
-
     handlesearch(query);
   };
 
@@ -89,49 +106,40 @@ export default function Navbar({ activeCategory, setActiveCategory }) {
       : Array.isArray(product?.images)
         ? product.images
         : [];
-
     return images[0] || 'https://placehold.co/120x140';
   };
+
+  const navItems = ['All', 'T-Shirts', 'Hoodies', 'Cargos'];
+  const navLabels = { All: 'Shop All', 'T-Shirts': 'T-Shirts', Hoodies: 'Hoodies', Cargos: 'Cargos' };
 
   return (
     <>
       <nav className={`navbar glass-panel ${isScrolled ? 'scrolled' : ''}`}>
+        {/* Logo */}
         <div className="nav-logo" onClick={handleLogoClick}>
-          AURA <span>clct</span>
+          Highkeytees<span>clct</span>
         </div>
 
+        {/* Desktop Nav Links */}
         <div className="nav-links">
-          <button
-            className={`hover-skew-effect ${activeCategory === 'All' ? 'active-link' : ''}`}
-            onClick={() => handleNavClick('All')}
-            style={{ fontWeight: activeCategory === 'All' ? '700' : '500', color: activeCategory === 'All' ? '#4e3629' : '' }}
-          >
-            Shop All
-          </button>
-          <button
-            className={`hover-skew-effect ${activeCategory === 'T-Shirts' ? 'active-link' : ''}`}
-            onClick={() => handleNavClick('T-Shirts')}
-            style={{ fontWeight: activeCategory === 'T-Shirts' ? '700' : '500', color: activeCategory === 'T-Shirts' ? '#4e3629' : '' }}
-          >
-            T-Shirts
-          </button>
-          <button
-            className={`hover-skew-effect ${activeCategory === 'Hoodies' ? 'active-link' : ''}`}
-            onClick={() => handleNavClick('Hoodies')}
-            style={{ fontWeight: activeCategory === 'Hoodies' ? '700' : '500', color: activeCategory === 'Hoodies' ? '#4e3629' : '' }}
-          >
-            Hoodies
-          </button>
-          <button
-            className={`hover-skew-effect ${activeCategory === 'Cargos' ? 'active-link' : ''}`}
-            onClick={() => handleNavClick('Cargos')}
-            style={{ fontWeight: activeCategory === 'Cargos' ? '700' : '500', color: activeCategory === 'Cargos' ? '#4e3629' : '' }}
-          >
-            Cargos
-          </button>
+          {navItems.map((cat) => (
+            <button
+              key={cat}
+              className={`hover-skew-effect ${activeCategory === cat ? 'active-link' : ''}`}
+              onClick={() => handleNavClick(cat)}
+              style={{
+                fontWeight: activeCategory === cat ? '700' : '500',
+                color: activeCategory === cat ? '#4e3629' : '',
+              }}
+            >
+              {navLabels[cat]}
+            </button>
+          ))}
         </div>
 
+        {/* Actions */}
         <div className="nav-actions">
+          {/* Search Shell */}
           <div className={`search-shell ${showSearchBox ? 'open' : ''}`}>
             <button className="icon-btn" aria-label="Search" onClick={handleSearchToggle}>
               <Search size={20} />
@@ -150,23 +158,31 @@ export default function Navbar({ activeCategory, setActiveCategory }) {
               </div>
             )}
           </div>
+
           <Link to="/" className="icon-btn" aria-label="Account">
             <User size={20} />
           </Link>
+
           <button className="icon-btn" onClick={toggleCart} aria-label="Shopping Bag">
             <ShoppingBag size={20} />
             {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
           </button>
+
+          {/* Animated Hamburger Button */}
           <button
-            className="icon-btn menu-mobile-btn"
+            className={`hamburger-btn ${isMobileMenuOpen ? 'is-open' : ''}`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Menu"
+            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isMobileMenuOpen}
           >
-            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            <span className="ham-line ham-line--top" />
+            <span className="ham-line ham-line--mid" />
+            <span className="ham-line ham-line--bot" />
           </button>
         </div>
       </nav>
 
+      {/* Search Results Panel */}
       {showSearchBox && (
         <div className="search-results-panel glass-panel">
           {isSearching ? (
@@ -193,49 +209,45 @@ export default function Navbar({ activeCategory, setActiveCategory }) {
         </div>
       )}
 
-      {isMobileMenuOpen && (
-        <div
-          className="glass-panel"
-          style={{
-            position: 'fixed',
-            top: '80px',
-            left: 0,
-            width: '100%',
-            zIndex: 999,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1.5rem',
-            padding: '2rem 1.5rem',
-            borderBottom: '1px solid rgba(78, 54, 41, 0.1)',
-            boxShadow: '0 10px 30px rgba(78, 54, 41, 0.05)'
-          }}
-        >
-          <button
-            onClick={() => handleNavClick('All')}
-            style={{ textAlign: 'left', fontSize: '1.1rem', fontWeight: activeCategory === 'All' ? '700' : '500', color: activeCategory === 'All' ? '#4e3629' : '' }}
-          >
-            Shop All
-          </button>
-          <button
-            onClick={() => handleNavClick('T-Shirts')}
-            style={{ textAlign: 'left', fontSize: '1.1rem', fontWeight: activeCategory === 'T-Shirts' ? '700' : '500', color: activeCategory === 'T-Shirts' ? '#4e3629' : '' }}
-          >
-            T-Shirts
-          </button>
-          <button
-            onClick={() => handleNavClick('Hoodies')}
-            style={{ textAlign: 'left', fontSize: '1.1rem', fontWeight: activeCategory === 'Hoodies' ? '700' : '500', color: activeCategory === 'Hoodies' ? '#4e3629' : '' }}
-          >
-            Hoodies
-          </button>
-          <button
-            onClick={() => handleNavClick('Cargos')}
-            style={{ textAlign: 'left', fontSize: '1.1rem', fontWeight: activeCategory === 'Cargos' ? '700' : '500', color: activeCategory === 'Cargos' ? '#4e3629' : '' }}
-          >
-            Cargos
-          </button>
+      {/* Mobile Menu Overlay */}
+      <div
+        className={`mobile-nav-overlay ${isMobileMenuOpen ? 'overlay-visible' : ''}`}
+        onClick={() => setIsMobileMenuOpen(false)}
+        aria-hidden="true"
+      />
+
+      {/* Mobile Menu Drawer */}
+      <div className={`mobile-nav-drawer glass-panel ${isMobileMenuOpen ? 'drawer-open' : ''}`}>
+        <div className="mobile-nav-inner">
+          <p className="mobile-nav-label">Navigation</p>
+          <nav className="mobile-nav-links">
+            {navItems.map((cat, i) => (
+              <button
+                key={cat}
+                className={`mobile-nav-item ${activeCategory === cat ? 'mobile-nav-item--active' : ''}`}
+                onClick={() => handleNavClick(cat)}
+                style={{ animationDelay: `${i * 60}ms` }}
+              >
+                <span>{navLabels[cat]}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            ))}
+          </nav>
+
+          <div className="mobile-nav-footer">
+            <Link to="/" className="mobile-footer-link" onClick={() => setIsMobileMenuOpen(false)}>
+              <User size={18} />
+              <span>My Account</span>
+            </Link>
+            <button className="mobile-footer-link" onClick={() => { toggleCart(); setIsMobileMenuOpen(false); }}>
+              <ShoppingBag size={18} />
+              <span>Cart {cartCount > 0 && `(${cartCount})`}</span>
+            </button>
+          </div>
         </div>
-      )}
+      </div>
     </>
   );
 }

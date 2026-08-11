@@ -72,7 +72,8 @@ ul {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 100vw;
+  max-width: 100%;
   height: 80px;
   z-index: 1000;
   display: flex;
@@ -81,10 +82,19 @@ ul {
   padding: 0 4rem;
   transition: $transition-smooth;
   box-shadow: 0 4px 30px rgba(78, 54, 41, 0.02);
+  overflow: visible;
+
+  @media (max-width: 992px) {
+    padding: 0 2rem;
+  }
 
   @media (max-width: 768px) {
-    padding: 0 1.5rem;
-    height: 70px;
+    padding: 0 1rem;
+    height: 64px;
+  }
+
+  @media (max-width: 420px) {
+    padding: 0 0.75rem;
   }
 
   &.scrolled {
@@ -103,6 +113,12 @@ ul {
     align-items: center;
     gap: 0.5rem;
     cursor: pointer;
+    flex-shrink: 0;
+
+    @media (max-width: 420px) {
+      font-size: 1.4rem;
+      gap: 0.3rem;
+    }
 
     span {
       font-weight: 300;
@@ -113,6 +129,12 @@ ul {
       border: 1px solid $sand-accent;
       padding: 2px 6px;
       border-radius: 4px;
+
+      @media (max-width: 420px) {
+        font-size: 0.7rem;
+        letter-spacing: 1.5px;
+        padding: 1px 4px;
+      }
     }
   }
 
@@ -158,9 +180,14 @@ ul {
     display: flex;
     align-items: center;
     gap: 1.5rem;
+    flex-shrink: 0;
+
+    @media (max-width: 992px) {
+      gap: 0.8rem;
+    }
 
     @media (max-width: 576px) {
-      gap: 0.5rem;
+      gap: 0.35rem;
     }
 
     .search-shell {
@@ -175,6 +202,11 @@ ul {
           color: $clay-deep;
         }
       }
+
+      // On mobile, position search input absolutely so it doesn't push layout
+      @media (max-width: 768px) {
+        position: static;
+      }
     }
 
     .search-input-wrap {
@@ -187,6 +219,18 @@ ul {
       border: 1px solid rgba(78, 54, 41, 0.12);
       box-shadow: 0 10px 30px rgba(78, 54, 41, 0.08);
       min-width: 240px;
+
+      @media (max-width: 768px) {
+        position: fixed;
+        top: 68px;
+        left: 1rem;
+        right: 1rem;
+        min-width: unset;
+        width: auto;
+        z-index: 1001;
+        background: rgba(255, 253, 251, 0.97);
+        box-shadow: 0 12px 32px rgba(78, 54, 41, 0.12);
+      }
 
       input {
         border: none;
@@ -216,6 +260,11 @@ ul {
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
+
+      @media (max-width: 420px) {
+        padding: 0.35rem;
+      }
 
       &:hover {
         background: rgba(78, 54, 41, 0.05);
@@ -236,27 +285,234 @@ ul {
         display: flex;
         align-items: center;
         justify-content: center;
+
+        @media (max-width: 420px) {
+          width: 16px;
+          height: 16px;
+          font-size: 0.65rem;
+          top: -3px;
+          right: -3px;
+        }
       }
     }
 
-    .menu-mobile-btn {
-      display: none;
-      @media (max-width: 992px) {
-        display: flex;
-        background: rgba(78, 54, 41, 0.07);
-        border-radius: 10px;
-        padding: 0.45rem 0.6rem;
-        border: 1px solid rgba(78, 54, 41, 0.12);
+  }
+}
+
+// ========================================
+// Animated Hamburger Button (Buyer Navbar)
+// ========================================
+.hamburger-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(78, 54, 41, 0.07);
+  border: 1px solid rgba(78, 54, 41, 0.12);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.25s;
+  flex-shrink: 0;
+
+  @media (max-width: 992px) {
+    display: flex;
+  }
+
+  &:hover {
+    background: rgba(78, 54, 41, 0.13);
+  }
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.ham-line {
+  display: block;
+  width: 20px;
+  height: 1.8px;
+  background-color: $clay-deep;
+  border-radius: 99px;
+  transform-origin: center;
+  transition:
+    transform 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.25s ease,
+    width 0.3s ease;
+
+  &--top  { }
+  &--mid  { }
+  &--bot  { }
+}
+
+.hamburger-btn.is-open {
+  background: rgba(78, 54, 41, 0.13);
+
+  .ham-line--top {
+    transform: translateY(6.8px) rotate(45deg);
+  }
+  .ham-line--mid {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  .ham-line--bot {
+    transform: translateY(-6.8px) rotate(-45deg);
+  }
+}
+
+// ========================================
+// Mobile Nav Overlay
+// ========================================
+.mobile-nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  background: rgba(44, 30, 22, 0.35);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+
+  @media (max-width: 992px) {
+    display: block;
+  }
+
+  &.overlay-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+// ========================================
+// Mobile Nav Drawer (Buyer)
+// ========================================
+@keyframes slideInMobileItem {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.mobile-nav-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: min(320px, 85vw);
+  height: 100vh;
+  z-index: 999;
+  border-radius: 0 24px 24px 0;
+  border-right: 1px solid rgba(78, 54, 41, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  display: none;
+
+  @media (max-width: 992px) {
+    display: block;
+  }
+
+  &.drawer-open {
+    transform: translateX(0);
+  }
+
+  .mobile-nav-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 6rem 1.5rem 2rem;
+    gap: 0;
+  }
+
+  .mobile-nav-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: $text-muted;
+    margin-bottom: 0.75rem;
+  }
+
+  .mobile-nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mobile-nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: $text-dark;
+    background: transparent;
+    transition: background 0.22s, color 0.22s;
+    animation: slideInMobileItem 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+    svg {
+      color: $text-muted;
+      transition: transform 0.22s, color 0.22s;
+    }
+
+    &:hover {
+      background: rgba(78, 54, 41, 0.06);
+      color: $clay-deep;
+
+      svg {
+        transform: translateX(4px);
         color: $clay-deep;
+      }
+    }
 
-        &:hover {
-          background: rgba(78, 54, 41, 0.13);
-        }
+    &.mobile-nav-item--active {
+      background: rgba(78, 54, 41, 0.08);
+      color: $clay-deep;
+      font-weight: 700;
 
-        &:active {
-          background: rgba(78, 54, 41, 0.18);
-          transform: scale(0.96);
-        }
+      svg {
+        color: $clay-deep;
+      }
+    }
+  }
+
+  .mobile-nav-footer {
+    margin-top: auto;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(78, 54, 41, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .mobile-footer-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: $text-muted;
+      background: transparent;
+      border: none;
+      text-decoration: none;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.22s, color 0.22s;
+
+      &:hover {
+        background: rgba(78, 54, 41, 0.06);
+        color: $clay-deep;
       }
     }
   }
