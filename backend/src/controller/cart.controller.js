@@ -228,12 +228,12 @@ export async function removecartitem(req, res) {
   try {
     const productid = req.params.productid;
     const cart = await CartModel.findOne({ user: req.user._id });  
-   if (!cart) {
+    if (!cart) {
       return res.status(404).json({
         message: 'cart not found'
       });
     }
-    const itemIndex = cart.items.findIndex(item => item.productid.toString() === productid);
+    const itemIndex = cart.items.findIndex(item => item.productid?.toString() === productid || item._id?.toString() === productid);
     if (itemIndex === -1) {
       return res.status(404).json({
         message: 'item not found in cart'
@@ -248,8 +248,6 @@ export async function removecartitem(req, res) {
       message: 'item removed from cart successfully',
       cart: cartResponse
     }); 
-
-
   }
   catch (err) {
     return res.status(500).json({
@@ -272,7 +270,7 @@ export async function updatecartquantity(req, res) {
       return res.status(404).json({ message: 'cart not found' });
     }
 
-    const itemIndex = cart.items.findIndex(item => item.productid.toString() === productid);
+    const itemIndex = cart.items.findIndex(item => item.productid?.toString() === productid || item._id?.toString() === productid);
     if (itemIndex === -1) {
       return res.status(404).json({ message: 'item not found in cart' });
     }
@@ -281,7 +279,7 @@ export async function updatecartquantity(req, res) {
       cart.items.splice(itemIndex, 1);
     } else {
       const item = cart.items[itemIndex];
-      const stock = await getstock(productid, item.origin);
+      const stock = await getstock(item.productid, item.origin);
       if (quantity > stock) {
         return res.status(400).json({ message: 'Quantity exceeds available stock' });
       }

@@ -72,7 +72,7 @@ export default function CartDrawer() {
                 </div>
               ) : (
                 cart.map((item) => {
-                  const itemId = item._id || item.productid || item.id;
+                  const itemId = (typeof item._id === 'string' ? item._id : null) || (typeof item.productid === 'string' ? item.productid : item.productid?._id) || item.id;
                   const details = item.productDetails;
                   const title = details?.title || item.title || 'Product';
                   const itemPrice = details?.price ?? item.productprice?.price ?? item.price ?? item.product?.price ?? 0;
@@ -82,7 +82,7 @@ export default function CartDrawer() {
                     : (Array.isArray(item.image) ? item.image[0] : item.image);
 
                   const quantity = item.quantity || 1;
-                  const productId = item.productid || item._id;
+                  const productId = (typeof item.productid === 'object' && item.productid !== null ? (item.productid._id || item.productid.id) : item.productid) || item._id;
                   
                   return (
                     <div className="cart-item" key={itemId}>

@@ -32,9 +32,25 @@ const usecart = () => {
     }
   }
 
+  const extractId = (target) => {
+    if (!target) return null;
+    if (typeof target === 'string') return target;
+    if (typeof target === 'object') {
+      if (target.productid) return extractId(target.productid);
+      if (target._id) return extractId(target._id);
+      if (target.id) return extractId(target.id);
+    }
+    return String(target);
+  };
+
   async function addtocartapi(productid, quantity = 1) {
     try {
-      const res = await addtocart(productid, quantity);
+      const cleanId = extractId(productid);
+      if (!cleanId) {
+        console.error("Invalid product ID passed to addtocartapi:", productid);
+        return;
+      }
+      const res = await addtocart(cleanId, quantity);
       if (res && res.cart) {
         const nextCartItems = Array.isArray(res.cart.items) ? res.cart.items : [];
         dispatch(addtocarts(nextCartItems));
@@ -50,7 +66,12 @@ const usecart = () => {
 
   async function removecartitemapi(productid) {
     try {
-      const res = await removecartitem(productid);
+      const cleanId = extractId(productid);
+      if (!cleanId) {
+        console.error("Invalid product ID passed to removecartitemapi:", productid);
+        return;
+      }
+      const res = await removecartitem(cleanId);
       if (res && res.cart) {
         const nextCartItems = Array.isArray(res.cart.items) ? res.cart.items : [];
         dispatch(addtocarts(nextCartItems));
@@ -65,7 +86,12 @@ const usecart = () => {
 
   async function updateCartQuantityApi(productid, quantity) {
     try {
-      const res = await updatecartquantity(productid, quantity);
+      const cleanId = extractId(productid);
+      if (!cleanId) {
+        console.error("Invalid product ID passed to updateCartQuantityApi:", productid);
+        return;
+      }
+      const res = await updatecartquantity(cleanId, quantity);
       if (res && res.cart) {
         const nextCartItems = Array.isArray(res.cart.items) ? res.cart.items : [];
         dispatch(addtocarts(nextCartItems));

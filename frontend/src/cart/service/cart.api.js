@@ -12,7 +12,7 @@ export async function addtocart(productid, quantity) {
 }
 
 export async function getcart() {
-    const res = await api.get(`/cart/`);
+    const res = await api.get(`/cart`);
     return res.data;
 }
 
