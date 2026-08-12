@@ -1,22 +1,34 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addtocart, getcart, removecartitem, updatecartquantity } from "../service/cart.api";
-import { setcart, addtocarts, toggleCart, openCart, closeCart } from "../cart.slice";
+import { setcart, addtocarts, setcartloaded, toggleCart, openCart, closeCart } from "../cart.slice";
+
+let cartFetchInProgress = false;
 
 const usecart = () => {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart.cart || []);
   const isCartOpen = useSelector((state) => state.cart.isCartOpen || false);
+  const isCartLoaded = useSelector((state) => state.cart.isLoaded || false);
 
-  async function getcartapi() {
+  async function getcartapi(force = false) {
+    if (!force && isCartLoaded) return;
+    if (cartFetchInProgress) return;
+
+    cartFetchInProgress = true;
     try {
       const res = await getcart();
       if (res && res.cart) {
         const nextCartItems = Array.isArray(res.cart.items) ? res.cart.items : [];
         dispatch(setcart(nextCartItems));
       }
+      dispatch(setcartloaded(true));
+      return res;
     } catch (err) {
       console.error("Error fetching cart:", err);
+      throw err;
+    } finally {
+      cartFetchInProgress = false;
     }
   }
 
@@ -26,11 +38,13 @@ const usecart = () => {
       if (res && res.cart) {
         const nextCartItems = Array.isArray(res.cart.items) ? res.cart.items : [];
         dispatch(addtocarts(nextCartItems));
+        dispatch(setcartloaded(true));
       }
-      await getcartapi();
       dispatch(openCart());
+      return res;
     } catch (err) {
       console.error("Error adding to cart:", err);
+      throw err;
     }
   }
 
@@ -40,28 +54,30 @@ const usecart = () => {
       if (res && res.cart) {
         const nextCartItems = Array.isArray(res.cart.items) ? res.cart.items : [];
         dispatch(addtocarts(nextCartItems));
+        dispatch(setcartloaded(true));
       }
-      await getcartapi();
+      return res;
     } catch (err) {
       console.error("Error removing from cart:", err);
+      throw err;
     }
   }
 
-  // Update quantity for a specific cart item
   async function updateCartQuantityApi(productid, quantity) {
     try {
       const res = await updatecartquantity(productid, quantity);
       if (res && res.cart) {
         const nextCartItems = Array.isArray(res.cart.items) ? res.cart.items : [];
         dispatch(addtocarts(nextCartItems));
+        dispatch(setcartloaded(true));
       }
-      await getcartapi();
+      return res;
     } catch (err) {
       console.error("Error updating cart quantity:", err);
+      throw err;
     }
   }
 
-  // Helper method accepting item object or product ID directly
   const addToCart = (productOrId, quantity = 1) => {
     let id = productOrId;
     if (typeof productOrId === "object" && productOrId !== null) {
@@ -75,8 +91,10 @@ const usecart = () => {
   };
 
   useEffect(() => {
-    getcartapi();
-  }, []);
+    if (!isCartLoaded) {
+      getcartapi();
+    }
+  }, [isCartLoaded]);
 
   const cartTotal = cart.reduce((total, item) => {
     const price = item.productDetails?.price ?? item.productprice?.price ?? item.price ?? item.product?.price ?? 0;

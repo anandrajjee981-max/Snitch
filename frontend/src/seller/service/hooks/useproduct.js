@@ -1,11 +1,12 @@
+import { useCallback } from "react";
 import { getproduct, submitProducts, allproduct, submitVariant, getSellerProductById, editproduct, editstock, editvariantstock } from "../service/product.api";
-import { addproduct ,allproductuser} from '../product.slice';
+import { addproduct, allproductuser } from '../product.slice';
 import { useDispatch } from "react-redux";
 
 const useproduct = () => {
   const dispatch = useDispatch();
 
-  const handleaddproduct = async (formDataToSend) => {
+  const handleaddproduct = useCallback(async (formDataToSend) => {
     try {
       const response = await submitProducts(formDataToSend, {
         headers: {
@@ -13,26 +14,26 @@ const useproduct = () => {
         },
       });
       if (response && response.data) {
-        dispatch(addproduct(response.data)); // Redux slice helper function ko call kiya
+        dispatch(addproduct(response.data));
         return response.data;
       }
     } catch (error) {
       console.error("Upload error:", error.response?.data || error);
       throw error;
     }
-  };
+  }, [dispatch]);
 
-  const handlegetproduct = async () => {
+  const handlegetproduct = useCallback(async () => {
     try {
       const response = await getproduct();
-      return response.data; 
+      return response.data;
     } catch (error) {
       console.error("Error fetching dynamic products:", error);
-      throw error; 
+      throw error;
     }
-  };
+  }, []);
 
-  const handleuserproduct = async () => {
+  const handleuserproduct = useCallback(async () => {
     const res = await allproduct();
     const products = Array.isArray(res.data?.product)
       ? res.data.product
@@ -41,9 +42,9 @@ const useproduct = () => {
         : [];
 
     dispatch(allproductuser(products));
-  };
+  }, [dispatch]);
 
-  const handlesubmitvariant = async (productId, formData) => {
+  const handlesubmitvariant = useCallback(async (productId, formData) => {
     try {
       const response = await submitVariant(productId, formData);
       return response.data;
@@ -51,9 +52,9 @@ const useproduct = () => {
       console.error("Variant submit error:", error.response?.data || error);
       throw error;
     }
-  };
+  }, []);
 
-  const handlegetproductbyid = async (productId) => {
+  const handlegetproductbyid = useCallback(async (productId) => {
     try {
       const response = await getSellerProductById(productId);
       return response.data;
@@ -61,9 +62,9 @@ const useproduct = () => {
       console.error("Error fetching single product:", error);
       throw error;
     }
-  };
+  }, []);
   
-  const handleeditproduct = async (productId, formData) => {
+  const handleeditproduct = useCallback(async (productId, formData) => {
     try {
       const response = await editproduct(productId, formData);
       return response.data;
@@ -71,9 +72,9 @@ const useproduct = () => {
       console.error("Error editing product:", error);
       throw error; 
     }
-  };
+  }, []);
 
-  const handleeditstock = async (productId, data) => {
+  const handleeditstock = useCallback(async (productId, data) => {
     try {
       const response = await editstock(productId, data);
       return response.data;
@@ -81,8 +82,9 @@ const useproduct = () => {
       console.error("Error editing stock:", error);
       throw error;
     }
-  };
-  const handleeditvariantstock = async (productId, variantId, data) => {
+  }, []);
+
+  const handleeditvariantstock = useCallback(async (productId, variantId, data) => {
     try {
       const response = await editvariantstock(productId, variantId, data);  
       return response.data;
@@ -90,7 +92,7 @@ const useproduct = () => {
       console.error("Error editing variant stock:", error);
       throw error;
     }
-  };
+  }, []);
 
   return { handleaddproduct, handlegetproduct, handleuserproduct, handlesubmitvariant, handlegetproductbyid, handleeditproduct, handleeditstock, handleeditvariantstock };
 };
