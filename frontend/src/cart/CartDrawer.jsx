@@ -3,21 +3,67 @@ import usecart from './hooks/usecart';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag, Plus, Minus, Trash2 } from 'lucide-react';
 import { useSelector } from 'react-redux';
+import { useRazorpay } from "react-razorpay";
 
 export default function CartDrawer() {
+  const { error, isLoading, Razorpay } = useRazorpay();
+
   const { 
     cart, 
     isCartOpen, 
     closeCart,
     cartTotal,
     removecartitemapi,
-    updateCartQuantityApi 
+    updateCartQuantityApi ,createPaymentOrderApi,updatePaymentStatusApi
   } = usecart();
 
   const drawerVariants = {
     closed: { x: '100%' },
     open: { x: 0 }
   };
+
+async function handlemyPayment() {
+    try {
+      const orderResponse = await createPaymentOrderApi(cartTotal * 100, "INR");
+      const { orderId } = orderResponse;
+
+      const options = {
+        key: process.env.RAZOR_KEY_ID,
+        amount: cartTotal * 100,
+        currency: "INR",
+        name: "Your Company Name",
+        description: "Purchase Description",
+        order_id: orderId,
+        handler: async (response) => {
+          const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = response;
+          try {
+            await updatePaymentStatusApi(razorpay_order_id, razorpay_payment_id, razorpay_signature);
+            alert("Payment Successful!");
+          } catch (err) {
+            console.error("Error updating payment status:", err);
+            alert("Payment verification failed. Please contact support.");
+          }
+        },
+        prefill: {
+          name: "John Doe",
+          email: "john.doe  @example.com",
+          contact: "9999999999",
+        },
+        theme: {
+          color: "#F37254",
+        },
+      };
+
+      const razorpayInstance = new Razorpay(options);
+      razorpayInstance.open();
+    } catch (err) {
+      console.error("Error creating payment order:", err);
+      alert("Payment initiation failed. Please try again.");
+    }
+  }
+
+
+
 
   const springTransition = {
     type: 'spring',
@@ -136,7 +182,7 @@ export default function CartDrawer() {
                     ₹{cartTotal.toLocaleString()}
                   </span>
                 </div>
-                <button className="btn-checkout" onClick={checklogin}>
+                <button onClick={handlemyPayment} className="btn-checkout">
                   Checkout Now
                 </button>
                 <p className="shipping-info">Complimentary shipping on all orders over $75.</p>

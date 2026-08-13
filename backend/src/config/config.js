@@ -23,6 +23,12 @@ if(!process.env.IMAGEKIT_PUBLIC_KEY){
 if(!process.env.IMAGEKIT_URL_END_POINT){
       throw new Error("image kit url  environment variable is not defined");
 }
+if(!process.env.RAZOR_KEY_ID){
+    throw new Error("razor key id environment variable is not defined");
+}
+if(!process.env.RAZOR_KEY_SECRET){
+    throw new Error("razor key secret environment variable is not defined");
+}
 export const Config = {
     MONGO_URI: process.env.MONGO_URI,
     JWT_SECRET: process.env.JWT_SECRET,
@@ -30,5 +36,7 @@ export const Config = {
     CLIENT_ID :process.env.CLIENT_ID,
     IMAGEKIT_PRIVATE_KEY:process.env.IMAGEKIT_PRIVATE_KEY,
     IMAGEKIT_PUBLIC_KEY:process.env.IMAGEKIT_PUBLIC_KEY,
-    IMAGEKIT_URL_END_POINT:process.env.IMAGEKIT_URL_END_POINT
+    IMAGEKIT_URL_END_POINT:process.env.IMAGEKIT_URL_END_POINT,
+    RAZOR_KEY_ID:process.env.RAZOR_KEY_ID,
+    RAZOR_KEY_SECRET:process.env.RAZOR_KEY_SECRET
 };

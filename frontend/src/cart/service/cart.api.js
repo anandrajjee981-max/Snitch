@@ -26,5 +26,12 @@ export async function updatecartquantity(productid, quantity) {
   return res.data;
 }
 
-
+export async function createPaymentOrder(amount, currency) {
+  const res = await api.post(`/payment/create`, { amount, currency });
+  return res.data;
+}
+export async function updatePaymentStatus(orderId, paymentId, signature) {
+  const res = await api.patch(`/payment/update`, { orderId, paymentId, signature });
+  return res.data;
+}
 

@@ -1,5 +1,4 @@
 import express from "express";
-
 import cookie from 'cookie-parser'
 import authrouter from "./routes/auth.route.js";
 import passport from 'passport'
@@ -10,6 +9,7 @@ import usermodel from './models/User.model.js'
 import productrouter from "./routes/product.route.js";
 import buyerrouter from "./routes/buyer.route.js";
 import cartrouter from "./routes/cart.route.js";
+import paymentrouter from "./routes/payment.route.js";
 
 const app = express()
 app.use(express.json())
@@ -59,5 +59,5 @@ app.use("/api/auth",authrouter)
 app.use("/api/seller",productrouter)
 app.use("/api/buyer",buyerrouter)
 app.use("/api/cart",cartrouter)
-
+app.use("/api/payment",paymentrouter)
 export default app

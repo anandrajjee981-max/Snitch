@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addtocart, getcart, removecartitem, updatecartquantity } from "../service/cart.api";
+import { addtocart, getcart, removecartitem, updatecartquantity,createPaymentOrder,updatePaymentStatus } from "../service/cart.api";
 import { setcart, addtocarts, setcartloaded, toggleCart, openCart, closeCart } from "../cart.slice";
 
 let cartFetchInProgress = false;
@@ -129,6 +129,24 @@ const usecart = () => {
   }, 0);
 
   const cartCount = cart.reduce((count, item) => count + (item.quantity || 1), 0);
+async function createPaymentOrderApi(amount, currency) {
+    try {
+      const res = await createPaymentOrder(amount, currency); 
+      return res; 
+    } catch (err) {
+      console.error("Error creating payment order:", err);
+      throw err;
+    }
+  }
+    async function updatePaymentStatusApi(orderId, paymentId, signature) {
+    try {
+      const res = await updatePaymentStatus(orderId, paymentId, signature);
+      return res;
+    } catch (err) {
+      console.error("Error updating payment status:", err);
+      throw err;
+    }
+  }
 
   return {
     cart,
@@ -144,8 +162,8 @@ const usecart = () => {
     removecartitemapi,
     updateCartQuantityApi,
   };
-};
 
+}
 export default usecart;
 
 

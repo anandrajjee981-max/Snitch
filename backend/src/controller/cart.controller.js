@@ -1,6 +1,7 @@
-import { getstock } from '../dao/cart.dao.js';
+import { getstock,aggregationResult } from '../dao/cart.dao.js';
 import CartModel from '../models/cart.model.js';
 import productmodel from '../models/Product.model.js';
+
 
 async function buildCartItemResponse(item) {
   const plainItem = item.toObject ? item.toObject() : item;
@@ -122,81 +123,7 @@ export async function addtocart(req, res) {
 
 export async function getcart(req, res) {
   try {
-    const aggregationResult = await CartModel.aggregate([
-      { $match: { user: req.user._id } },
-      { $unwind: { path: '$items', preserveNullAndEmptyArrays: true } },
-      {
-        $lookup: {
-          from: 'products',
-          let: {
-            selectedId: '$items.productid',
-            origin: '$items.origin'
-          },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $or: [
-                    {
-                      $and: [
-                        { $eq: ['$$origin', 'Main'] },
-                        { $eq: [{ $toString: '$_id' }, '$$selectedId'] }
-                      ]
-                    },
-                    {
-                      $and: [
-                        { $eq: ['$$origin', 'Variant'] },
-                        {
-                          $in: [
-                            '$$selectedId',
-                            {
-                              $map: {
-                                input: '$variants',
-                                as: 'variant',
-                                in: { $toString: '$$variant._id' }
-                              }
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              }
-            }
-          ],
-          as: 'productcart'
-        }
-      },
-      {
-        $addFields: {
-          productcart: { $ifNull: [{ $arrayElemAt: ['$productcart', 0] }, null] }
-        }
-      },
-      {
-        $addFields: {
-          'items.itemTotal': {
-            $multiply: [
-              {
-                $ifNull: ['$productcart.productprice.price', '$items.price']
-              },
-              '$items.quantity'
-            ]
-          }
-        }
-      },
-      {
-        $group: {
-          _id: '$_id',
-          user: { $first: '$user' },
-          items: { $push: '$items' },
-          totalQuantity: { $sum: '$items.quantity' },
-          totalCartAmount: { $sum: '$items.itemTotal' },
-          __v: { $first: '$__v' }
-        }
-      }
-    ], { maxTimeMS: 60000, allowDiskUse: true });
-
+   const aggregationResult = await aggregationResult(req.user._id);
     if (!aggregationResult.length) {
       const createdCart = await CartModel.create({ user: req.user._id, items: [] });
       const cartResponse = createdCart.toObject ? createdCart.toObject() : createdCart;
