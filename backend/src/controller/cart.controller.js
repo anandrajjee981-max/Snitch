@@ -123,8 +123,8 @@ export async function addtocart(req, res) {
 
 export async function getcart(req, res) {
   try {
-   const aggregationResult = await aggregationResult(req.user._id);
-    if (!aggregationResult.length) {
+    const aggregatedCartData = await aggregationResult(req.user._id);
+    if (!aggregatedCartData || !aggregatedCartData.length) {
       const createdCart = await CartModel.create({ user: req.user._id, items: [] });
       const cartResponse = createdCart.toObject ? createdCart.toObject() : createdCart;
       cartResponse.items = [];
@@ -134,7 +134,7 @@ export async function getcart(req, res) {
       });
     }
 
-    const cart = aggregationResult[0];
+    const cart = aggregatedCartData[0];
     const cartResponse = cart.toObject ? cart.toObject() : cart;
     const items = Array.isArray(cartResponse.items) ? cartResponse.items : [];
     cartResponse.items = await Promise.all(items.map(buildCartItemResponse));

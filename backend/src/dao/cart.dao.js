@@ -1,5 +1,5 @@
 import productmodel from '../models/Product.model.js';
-import cartModel from '../models/cart.model.js';
+import CartModel from '../models/cart.model.js';
 
 export async function getstock(productid, origin) {
   try {
