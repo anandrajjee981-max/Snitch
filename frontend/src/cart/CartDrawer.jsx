@@ -4,9 +4,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag, Plus, Minus, Trash2 } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { useRazorpay } from "react-razorpay";
+import { useNavigate } from 'react-router-dom';
 
 export default function CartDrawer() {
+  const navigate = useNavigate();
   const { error, isLoading, Razorpay } = useRazorpay();
+  const user = useSelector((state) => state.auth?.user);
 
   const { 
     cart, 
@@ -14,7 +17,9 @@ export default function CartDrawer() {
     closeCart,
     cartTotal,
     removecartitemapi,
-    updateCartQuantityApi ,createPaymentOrderApi,updatePaymentStatusApi
+    updateCartQuantityApi,
+    createPaymentOrderApi,
+    updatePaymentStatusApi
   } = usecart();
 
   const drawerVariants = {
@@ -22,35 +27,48 @@ export default function CartDrawer() {
     open: { x: 0 }
   };
 
-async function handlemyPayment() {
+  async function handlemyPayment() {
+    if (!user) {
+      alert('Please log in first to complete your purchase.');
+      closeCart();
+      navigate('/');
+      return;
+    }
+
     try {
       const orderResponse = await createPaymentOrderApi(cartTotal * 100, "INR");
-      const { orderId } = orderResponse;
+      const orderId = orderResponse?.payment?.orderId || orderResponse?.orderId;
+
+      if (!orderId) {
+        throw new Error("Order creation failed - orderId missing");
+      }
 
       const options = {
-        key: process.env.RAZOR_KEY_ID,
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || process.env.RAZOR_KEY_ID || "rzp_test_default",
         amount: cartTotal * 100,
         currency: "INR",
-        name: "Your Company Name",
-        description: "Purchase Description",
+        name: "Highkeytees CLCT",
+        description: "Order Purchase Payment",
         order_id: orderId,
         handler: async (response) => {
           const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = response;
           try {
             await updatePaymentStatusApi(razorpay_order_id, razorpay_payment_id, razorpay_signature);
-            alert("Payment Successful!");
+            alert("Payment Successful! Redirecting to your details...");
+            closeCart();
+            navigate('/mydetails?tab=payments');
           } catch (err) {
             console.error("Error updating payment status:", err);
             alert("Payment verification failed. Please contact support.");
           }
         },
         prefill: {
-          name: "John Doe",
-          email: "john.doe  @example.com",
-          contact: "9999999999",
+          name: user.username || "Customer",
+          email: user.email || "",
+          contact: user.phonenumber ? String(user.phonenumber) : "9999999999",
         },
         theme: {
-          color: "#F37254",
+          color: "#4e3629",
         },
       };
 
@@ -58,7 +76,7 @@ async function handlemyPayment() {
       razorpayInstance.open();
     } catch (err) {
       console.error("Error creating payment order:", err);
-      alert("Payment initiation failed. Please try again.");
+      alert("Payment initiation failed: " + (err.response?.data?.message || err.message || "Please try again."));
     }
   }
 
@@ -71,14 +89,6 @@ async function handlemyPayment() {
     damping: 12,
     stiffness: 100
   };
-  const user = useSelector(state=>state.auth.user)
-  async function checklogin(){
-    if(!user){
-      alert('need to login first...')
-      return;
-    }
-    alert('Proceeding to checkout...')
-  }
 
   return (
     <AnimatePresence>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useCart } from './productroute.slice';
-import { ShoppingBag, Search, User } from 'lucide-react';
+import { ShoppingBag, Search, User, CreditCard, Settings, LogOut, ChevronDown, LayoutDashboard } from 'lucide-react';
 import useSearch from './hooks/usesearch';
 
 export default function Navbar({ activeCategory, setActiveCategory }) {
@@ -10,12 +10,16 @@ export default function Navbar({ activeCategory, setActiveCategory }) {
   const { toggleCart, cartCount } = useCart();
   const { handlesearch, clearSearch } = useSearch();
   const { searchResults, isSearching } = useSelector((state) => state.search);
+  const user = useSelector((state) => state.auth?.user);
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showSearchBox, setShowSearchBox] = useState(false);
   const [searchInput, setSearchInput] = useState('');
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+
   const searchInputRef = useRef(null);
+  const userMenuRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,6 +27,17 @@ export default function Navbar({ activeCategory, setActiveCategory }) {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close user dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // Close mobile menu on resize to desktop
@@ -159,9 +174,96 @@ export default function Navbar({ activeCategory, setActiveCategory }) {
             )}
           </div>
 
-          <Link to="/" className="icon-btn" aria-label="Account">
-            <User size={20} />
-          </Link>
+          {/* User Settings Dropdown */}
+          <div className="user-dropdown-wrapper" ref={userMenuRef}>
+            <button
+              className={`icon-btn user-btn ${isUserMenuOpen ? 'active' : ''}`}
+              aria-label="Settings and Account"
+              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+            >
+              <User size={20} />
+              <ChevronDown size={14} className={`dropdown-chevron ${isUserMenuOpen ? 'open' : ''}`} />
+            </button>
+
+            {isUserMenuOpen && (
+              <div className="user-menu-dropdown glass-panel">
+                <div className="dropdown-user-header">
+                  <div className="dropdown-avatar">
+                    <User size={20} />
+                  </div>
+                  <div className="dropdown-user-info">
+                    <span className="user-name">{user?.username || 'Guest User'}</span>
+                    <span className="user-email">{user?.email || 'Welcome'}</span>
+                  </div>
+                </div>
+
+                <div className="dropdown-divider" />
+
+                <div className="dropdown-items-group">
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
+                      navigate('/mydetails?tab=details');
+                    }}
+                  >
+                    <User size={16} />
+                    <span>User Details</span>
+                  </button>
+
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
+                      navigate('/mydetails?tab=payments');
+                    }}
+                  >
+                    <CreditCard size={16} />
+                    <span>Payment History</span>
+                  </button>
+
+                  {user?.role === 'seller' && (
+                    <button
+                      className="dropdown-item"
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        navigate('/sellerdashboard');
+                      }}
+                    >
+                      <LayoutDashboard size={16} />
+                      <span>Seller Dashboard</span>
+                    </button>
+                  )}
+                </div>
+
+                <div className="dropdown-divider" />
+
+                {user ? (
+                  <button
+                    className="dropdown-item dropdown-item-danger"
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
+                      navigate('/');
+                    }}
+                  >
+                    <LogOut size={16} />
+                    <span>Sign Out</span>
+                  </button>
+                ) : (
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
+                      navigate('/');
+                    }}
+                  >
+                    <User size={16} />
+                    <span>Sign In</span>
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
 
           <button className="icon-btn" onClick={toggleCart} aria-label="Shopping Bag">
             <ShoppingBag size={20} />
@@ -237,10 +339,26 @@ export default function Navbar({ activeCategory, setActiveCategory }) {
           </nav>
 
           <div className="mobile-nav-footer">
-            <Link to="/" className="mobile-footer-link" onClick={() => setIsMobileMenuOpen(false)}>
+            <button
+              className="mobile-footer-link"
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                navigate('/mydetails?tab=details');
+              }}
+            >
               <User size={18} />
-              <span>My Account</span>
-            </Link>
+              <span>User Details</span>
+            </button>
+            <button
+              className="mobile-footer-link"
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                navigate('/mydetails?tab=payments');
+              }}
+            >
+              <CreditCard size={18} />
+              <span>Payment History</span>
+            </button>
             <button className="mobile-footer-link" onClick={() => { toggleCart(); setIsMobileMenuOpen(false); }}>
               <ShoppingBag size={18} />
               <span>Cart {cartCount > 0 && `(${cartCount})`}</span>

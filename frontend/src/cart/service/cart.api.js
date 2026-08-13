@@ -34,4 +34,12 @@ export async function updatePaymentStatus(orderId, paymentId, signature) {
   const res = await api.patch(`/payment/update`, { orderId, paymentId, signature });
   return res.data;
 }
+export async function getPaymentDetails(orderId) {
+  const res = await api.get(`/payment/details/${orderId}`);
+  return res.data;
+}
 
+export async function getUserPayments() {
+  const res = await api.get(`/payment/user-payments`);
+  return res.data;
+}

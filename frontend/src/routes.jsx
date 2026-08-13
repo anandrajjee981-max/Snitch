@@ -13,6 +13,7 @@ import EditProduct from './seller/service/pages/EditProduct';
 import SellerNavbar from './seller/service/pages/SellerNavbar';
 import Protected from './components/Protected';
 import Dashboard from './buyer/a';
+import MyDetails from './components/MyDetails';
 
 // Layout that contains persistent Navbar and CartDrawer for the storefront experience
 const StorefrontLayout = () => {
@@ -62,10 +63,16 @@ export const router = createBrowserRouter([
       {
         path: "/product/:id",
         element: (
-        
-            <ProductDetails />
-         
+          <ProductDetails />
         )
+      },
+      {
+        path: "/mydetails",
+        element: <MyDetails />
+      },
+      {
+        path: "/my-details",
+        element: <MyDetails />
       }
     ]
   },

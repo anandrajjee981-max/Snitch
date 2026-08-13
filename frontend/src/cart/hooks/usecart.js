@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addtocart, getcart, removecartitem, updatecartquantity,createPaymentOrder,updatePaymentStatus } from "../service/cart.api";
+import { addtocart, getcart, removecartitem, updatecartquantity, createPaymentOrder, updatePaymentStatus, getPaymentDetails, getUserPayments } from "../service/cart.api";
 import { setcart, addtocarts, setcartloaded, toggleCart, openCart, closeCart } from "../cart.slice";
 
 let cartFetchInProgress = false;
@@ -147,6 +147,25 @@ async function createPaymentOrderApi(amount, currency) {
       throw err;
     }
   }
+  async function getPaymentDetailsApi(orderId) {
+    try {
+      const res = await getPaymentDetails(orderId);
+      return res;
+    } catch (err) {
+      console.error("Error fetching payment details:", err);
+      throw err;
+    }
+  }
+
+  async function getUserPaymentsApi() {
+    try {
+      const res = await getUserPayments();
+      return res;
+    } catch (err) {
+      console.error("Error fetching user payments:", err);
+      throw err;
+    }
+  }
 
   return {
     cart,
@@ -161,6 +180,10 @@ async function createPaymentOrderApi(amount, currency) {
     openCart: () => dispatch(openCart()),
     removecartitemapi,
     updateCartQuantityApi,
+    createPaymentOrderApi,
+    updatePaymentStatusApi,
+    getPaymentDetailsApi,
+    getUserPaymentsApi
   };
 
 }

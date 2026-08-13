@@ -15,9 +15,10 @@ export const createPaymentOrder = async (req, res) => {
     let currency = cartAggregation[0].currency;
     const order = await createOrder(amount, currency);
 const payment = await paymentmodel.create({
+      user: req.user._id,
       orderId: order.id,
       amount: amount,
-        currency: currency,
+      currency: currency,
     });
     res.status(201).json({
       message: "Payment order created successfully",
@@ -31,7 +32,7 @@ const payment = await paymentmodel.create({
 export const updatePaymentStatus = async (req, res) => {
   try {
     const { orderId, paymentId, signature } = req.body; 
-const payment = await paymentmodel.findOne({ orderId });
+    const payment = await paymentmodel.findOne({ orderId });
     if (!payment) {
       return res.status(404).json({ message: "Payment order not found" });
     }
@@ -44,12 +45,22 @@ const payment = await paymentmodel.findOne({ orderId });
       return res.status(400).json({ message: "Invalid payment signature" });
     }
     payment.status = "paid";
+    payment.paymentId = paymentId;
+    payment.signature = signature;
     await payment.save();
+
+    // Clear cart upon successful payment
+    await cartModel.findOneAndUpdate(
+      { user: req.user._id },
+      { $set: { items: [] } }
+    );
+
     res.status(200).json({ message: "Payment status updated successfully", payment });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 export const getPaymentDetails = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -61,4 +72,13 @@ export const getPaymentDetails = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   } 
-}
+};
+
+export const getUserPayments = async (req, res) => {
+  try {
+    const payments = await paymentmodel.find({ user: req.user._id }).sort({ createdAt: -1 });
+    res.status(200).json({ message: "User payments fetched successfully", payments });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
