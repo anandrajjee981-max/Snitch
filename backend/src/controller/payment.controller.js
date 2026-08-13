@@ -7,17 +7,29 @@ import { Config } from "../config/config.js";
 
 export const createPaymentOrder = async (req, res) => {
   try {
- const cartAggregation = await aggregationResult(req.user._id);
-    if (!cartAggregation || cartAggregation.length === 0) {
+    const cartAggregation = await aggregationResult(req.user._id);
+    if (!cartAggregation || cartAggregation.length === 0 || !cartAggregation[0].items || cartAggregation[0].items.length === 0) {
       return res.status(400).json({ message: "Cart is empty" });
     }
-    let amount = cartAggregation[0].totalAmount;
-    let currency = cartAggregation[0].currency;
-    const order = await createOrder(amount, currency);
-const payment = await paymentmodel.create({
+
+    let amountInPaise = 0;
+    if (req.body.amount && Number(req.body.amount) > 0) {
+      amountInPaise = Number(req.body.amount);
+    } else {
+      const rupees = cartAggregation[0].totalCartAmount || 0;
+      amountInPaise = Math.round(rupees * 100);
+    }
+
+    if (amountInPaise <= 0) {
+      return res.status(400).json({ message: "Invalid payment amount in cart" });
+    }
+
+    let currency = req.body.currency || cartAggregation[0].currency || "INR";
+    const order = await createOrder(amountInPaise, currency);
+    const payment = await paymentmodel.create({
       user: req.user._id,
       orderId: order.id,
-      amount: amount,
+      amount: amountInPaise,
       currency: currency,
     });
     res.status(201).json({
@@ -25,7 +37,8 @@ const payment = await paymentmodel.create({
       payment
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error in createPaymentOrder:", error);
+    res.status(500).json({ message: error.message || "Failed to create payment order" });
   }
 };
 
