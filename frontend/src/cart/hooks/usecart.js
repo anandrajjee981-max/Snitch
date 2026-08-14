@@ -5,9 +5,15 @@ import { setcart, addtocarts, setcartloaded, toggleCart, openCart, closeCart } f
 
 let cartFetchInProgress = false;
 
+const normalizeCartItems = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (payload && Array.isArray(payload.items)) return payload.items;
+  return [];
+};
+
 const usecart = () => {
   const dispatch = useDispatch();
-  const cart = useSelector((state) => state.cart.cart || []);
+  const cart = useSelector((state) => normalizeCartItems(state.cart?.cart));
   const isCartOpen = useSelector((state) => state.cart.isCartOpen || false);
   const isCartLoaded = useSelector((state) => state.cart.isLoaded || false);
 
@@ -54,8 +60,9 @@ const usecart = () => {
       if (res && res.cart) {
         const nextCartItems = Array.isArray(res.cart.items) ? res.cart.items : [];
         dispatch(addtocarts(nextCartItems));
-        dispatch(setcartloaded(true));
       }
+
+      await getcartapi(true);
       dispatch(openCart());
       return res;
     } catch (err) {
@@ -75,8 +82,8 @@ const usecart = () => {
       if (res && res.cart) {
         const nextCartItems = Array.isArray(res.cart.items) ? res.cart.items : [];
         dispatch(addtocarts(nextCartItems));
-        dispatch(setcartloaded(true));
       }
+      await getcartapi(true);
       return res;
     } catch (err) {
       console.error("Error removing from cart:", err);
@@ -95,8 +102,8 @@ const usecart = () => {
       if (res && res.cart) {
         const nextCartItems = Array.isArray(res.cart.items) ? res.cart.items : [];
         dispatch(addtocarts(nextCartItems));
-        dispatch(setcartloaded(true));
       }
+      await getcartapi(true);
       return res;
     } catch (err) {
       console.error("Error updating cart quantity:", err);
@@ -121,6 +128,12 @@ const usecart = () => {
       getcartapi();
     }
   }, [isCartLoaded]);
+
+  useEffect(() => {
+    if (isCartOpen && isCartLoaded) {
+      getcartapi(true);
+    }
+  }, [isCartOpen, isCartLoaded]);
 
   const cartTotal = cart.reduce((total, item) => {
     const price = item.productDetails?.price ?? item.productprice?.price ?? item.price ?? item.product?.price ?? 0;

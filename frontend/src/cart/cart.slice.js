@@ -1,5 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const normalizeCartItems = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (payload && Array.isArray(payload.items)) return payload.items;
+  return [];
+};
+
 const initialState = {
   cart: [],
   isCartOpen: false,
@@ -11,11 +17,11 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     setcart: (state, action) => {
-      state.cart = action.payload;
+      state.cart = normalizeCartItems(action.payload);
       state.isLoaded = true;
     },
     addtocarts: (state, action) => {
-      state.cart = action.payload;
+      state.cart = normalizeCartItems(action.payload);
       state.isLoaded = true;
     },
     setcartloaded: (state, action) => {

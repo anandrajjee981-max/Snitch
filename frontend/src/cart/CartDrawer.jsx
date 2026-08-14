@@ -22,6 +22,8 @@ export default function CartDrawer() {
     updatePaymentStatusApi
   } = usecart();
 
+  const safeCart = Array.isArray(cart) ? cart : [];
+
   const drawerVariants = {
     closed: { x: '100%' },
     open: { x: 0 }
@@ -43,8 +45,10 @@ export default function CartDrawer() {
         throw new Error("Order creation failed - orderId missing");
       }
 
+      const keyId = orderResponse?.key || import.meta.env.VITE_RAZORPAY_KEY_ID || (typeof process !== 'undefined' && process.env?.RAZOR_KEY_ID) || "rzp_test_default";
+
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || process.env.RAZOR_KEY_ID || "rzp_test_default",
+        key: keyId,
         amount: cartTotal * 100,
         currency: "INR",
         name: "Highkeytees CLCT",
@@ -113,21 +117,21 @@ export default function CartDrawer() {
             transition={springTransition}
           >
             <div className="cart-header">
-              <h2>Your Bag ({cart.reduce((a, b) => a + (b.quantity || 1), 0)})</h2>
+              <h2>Your Bag ({safeCart.reduce((a, b) => a + (b.quantity || 1), 0)})</h2>
               <button className="btn-close-drawer" onClick={closeCart} aria-label="Close cart">
                 <X size={24} />
               </button>
             </div>
 
             <div className="cart-items-list">
-              {cart.length === 0 ? (
+              {safeCart.length === 0 ? (
                 <div className="cart-empty">
                   <ShoppingBag size={48} />
                   <h3>Your bag is empty</h3>
                   <p>Explore our products and find the perfect additions to your wardrobe.</p>
                 </div>
               ) : (
-                cart.map((item) => {
+                safeCart.map((item) => {
                   const itemId = (typeof item._id === 'string' ? item._id : null) || (typeof item.productid === 'string' ? item.productid : item.productid?._id) || item.id;
                   const details = item.productDetails;
                   const title = details?.title || item.title || 'Product';
@@ -184,7 +188,7 @@ export default function CartDrawer() {
               )}
             </div>
 
-            {cart.length > 0 && (
+            {safeCart.length > 0 && (
               <div className="cart-footer">
                 <div className="summary-row">
                   <span className="label">Total amount:</span>

@@ -1,34 +1,3 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
-}
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -54,7 +23,7 @@ body {
   margin: 0;
 }
 
-#root {
+/* #root {
   width: 1126px;
   max-width: 100%;
   margin: 0 auto;
@@ -64,7 +33,7 @@ body {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-}
+} */
 
 h1,
 h2 {
@@ -110,7 +79,7 @@ code {
   background: var(--code-bg);
 }
 
-/* User Navbar Dropdown Styles */
+/* Navbar User Dropdown - Highkeytees Theme */
 .user-dropdown-wrapper {
   position: relative;
   display: inline-block;
@@ -123,7 +92,7 @@ code {
 }
 
 .dropdown-chevron {
-  transition: transform 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .dropdown-chevron.open {
@@ -132,24 +101,26 @@ code {
 
 .user-menu-dropdown {
   position: absolute;
-  top: calc(100% + 12px);
+  top: calc(100% + 14px);
   right: 0;
-  width: 240px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(229, 228, 231, 0.8);
-  border-radius: 16px;
+  width: 280px;
+  background: rgba(255, 253, 251, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 2px solid #c3b091;
+  border-radius: 20px;
   padding: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 14px 40px rgba(78, 54, 41, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.8);
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0;
   text-align: left;
-  animation: fadeInDropdown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fadeInSnitchDropdown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: 'Outfit', -apple-system, sans-serif;
 }
 
-@keyframes fadeInDropdown {
+@keyframes fadeInSnitchDropdown {
   from {
     opacity: 0;
     transform: translateY(-8px);
@@ -164,19 +135,25 @@ code {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 6px 8px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(195, 176, 145, 0.1) 0%, rgba(230, 223, 213, 0.1) 100%);
+  border-radius: 14px;
+  border-bottom: 1px solid #e6dfd5;
+  margin-bottom: 8px;
 }
 
 .dropdown-avatar {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: #4e3629;
-  color: #fff;
+  background: linear-gradient(135deg, #4e3629 0%, #3d2b20 100%);
+  color: #fffdfb;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  border: 2px solid #c3b091;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .dropdown-user-info {
@@ -188,7 +165,7 @@ code {
 .dropdown-user-info .user-name {
   font-weight: 700;
   font-size: 14px;
-  color: #1e1e1e;
+  color: #2c1e16;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -196,7 +173,7 @@ code {
 
 .dropdown-user-info .user-email {
   font-size: 12px;
-  color: #71717a;
+  color: #7e6e65;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -204,8 +181,8 @@ code {
 
 .dropdown-divider {
   height: 1px;
-  background: #e4e4e7;
-  margin: 4px 0;
+  background: linear-gradient(90deg, transparent, #e6dfd5 20%, #e6dfd5 80%, transparent);
+  margin: 8px 0;
 }
 
 .dropdown-items-group {
@@ -215,426 +192,770 @@ code {
 }
 
 .dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  displa2px;
   width: 100%;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border: none;
   background: transparent;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 14px;
   font-weight: 500;
-  color: #3f3f46;
+  color: #2c1e16;
+  font-family: 'Outfit', sans-serif;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   text-align: left;
 }
 
 .dropdown-item:hover {
-  background: rgba(78, 54, 41, 0.08);
+  background: linear-gradient(90deg, rgba(195, 176, 145, 0.12) 0%, rgba(195, 176, 145, 0.06) 100%);
   color: #4e3629;
+  font-weight: 600;
+  transform: translateX(4px);
+}
+
+.dropdown-item svg {
+  color: #c3b091;
+  transition: color 0.25s ease;
+}
+
+.dropdown-item:hover svg {
+  color: #4e3629(78, 54, 41, 0.08);
+  color: #4e3629;
+  font-weight: 600;
 }
 
 .dropdown-item-danger {
-  color: #ef4444;
+  color: #c62828;
 }
 
 .dropdown-item-danger:hover {
-  background: rgba(239, 68, 68, 0.08);
-  color: #dc2626;
+  background: rgba(198, 40, 40, 0.12);
+  color: #b71c1c;
+  transform: translateX(4px);
 }
 
-/* MyDetails Page Styles */
-.mydetails-page-wrapper {
+.dropdown-item-danger svg {
+  color: #c62828;
+}
+
+/* Snitch MyDetails Dashboard Page - Warm Beige Aesthetic */
+.snitch-mydetails-wrapper {
   width: 100%;
-  max-width: 960px;
-  margin: 40px auto;
-  padding: 0 16px;
+  margin: 36px 0 60px 0;
+  padding: 0 40px;
   box-sizing: border-box;
+  font-family: 'Outfit', -apple-system, sans-serif;
 }
 
-.mydetails-container {
-  background: rgba(255, 255, 255, 0.85);
+.snitch-mydetails-container {
+  background: rgba(255, 253, 251, 0.92);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(229, 228, 231, 0.8);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid #e6dfd5;
   border-radius: 24px;
-  padding: 32px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+  padding: 36px;
+  box-shadow: 0 10px 30px -10px rgba(78, 54, 41, 0.08);
   text-align: left;
 }
 
-.mydetails-header {
+.snitch-top-nav-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
-}
-
-.mydetails-header h2 {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1e1e1e;
-  margin: 0;
-}
-
-.btn-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: transparent;
-  border: 1px solid #e4e4e7;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #4e3629;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-back:hover {
-  background: #4e3629;
-  color: #fff;
-  border-color: #4e3629;
-}
-
-/* User Hero Card */
-.user-hero-card {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  background: linear-gradient(135deg, rgba(78, 54, 41, 0.06), rgba(78, 54, 41, 0.02));
-  border: 1px solid rgba(78, 54, 41, 0.12);
-  border-radius: 18px;
-  padding: 24px;
   margin-bottom: 28px;
 }
 
-.user-avatar-wrap {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
+.btn-snitch-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fffdfb;
+  border: 1px solid #e6dfd5;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4e3629;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(78, 54, 41, 0.04);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-snitch-back:hover {
   background: #4e3629;
-  color: #fff;
+  color: #fffdfb;
+  border-color: #4e3629;
+  transform: translateX(-2px);
+}
+
+.snitch-brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(78, 54, 41, 0.08);
+  color: #4e3629;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.sparkle-gold {
+  color: #c3b091;
+}
+
+/* User Profile Warm Clay Hero Banner */
+.snitch-user-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: linear-gradient(135deg, #4e3629 0%, #3d2b20 100%);
+  border-radius: 24px;
+  padding: 32px;
+  color: #fffdfb;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(78, 54, 41, 0.18);
+  margin-bottom: 32px;
+}
+
+.hero-clay-glow {
+  position: absolute;
+  top: -40%;
+  right: -15%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(195, 176, 145, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
+  pointer-events: none;
+}
+
+.hero-avatar-border {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, #c3b091, #e6dfd5);
+  flex-shrink: 0;
+}
+
+.hero-avatar-box {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #3d2b20;
+  color: #c3b091;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 1;
+}
+
+.hero-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hero-username {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fffdfb;
+  margin: 0;
+  letter-spacing: -0.4px;
+}
+
+.snitch-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.role-buyer, .role-customer {
+  background: rgba(255, 253, 251, 0.2);
+  color: #fffdfb;
+  backdrop-filter: blur(8px);
+}
+
+.role-seller {
+  background: #c3b091;
+  color: #4e3629;
+}
+
+.hero-user-email {
+  font-size: 14px;
+  color: rgba(255, 253, 251, 0.8);
+  margin: 0 0 4px;
+}
+
+.hero-info-chips {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.snitch-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 253, 251, 0.12);
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  color: rgba(255, 253, 251, 0.95);
+  backdrop-filter: blur(4px);
+}
+
+/* Snitch Clay Segmented Tabs */
+.snitch-tab-switcher {
+  display: flex;
+  background: #f7f3ee;
+  padding: 6px;
+  border-radius: 16px;
+  gap: 6px;
+  margin-bottom: 32px;
+  border: 1px solid #e6dfd5;
+}
+
+.tab-btn-pill {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #7e6e65;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tab-btn-pill:hover {
+  color: #2c1e16;
+}
+
+.tab-btn-pill.active {
+  background: #4e3629;
+  color: #fffdfb;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(78, 54, 41, 0.15);
+}
+
+.count-pill {
+  background: rgba(255, 253, 251, 0.25);
+  color: #fffdfb;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.tab-btn-pill:not(.active) .count-pill {
+  background: #e6dfd5;
+  color: #4e3629;
+}
+
+/* Profile Details Grid */
+.snitch-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.snitch-detail-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #fffdfb;
+  border: 1px solid #e6dfd5;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(78, 54, 41, 0.02);
+  transition: all 0.2s ease;
+}
+
+.snitch-detail-card:hover {
+  transform: translateY(-2px);
+  border-color: #4e3629;
+  box-shadow: 0 8px 24px rgba(78, 54, 41, 0.08);
+}
+
+.card-icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(78, 54, 41, 0.08);
+  color: #4e3629;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 8px 20px rgba(78, 54, 41, 0.2);
 }
 
-.user-hero-info h3 {
-  font-size: 22px;
-  font-weight: 700;
-  color: #1e1e1e;
-  margin: 0 0 4px;
-}
-
-.user-hero-info .user-email {
-  font-size: 14px;
-  color: #71717a;
-  margin-bottom: 10px;
-}
-
-.user-meta-tags {
+.card-info-copy {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  flex-direction: column;
 }
 
-.role-tag, .phone-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  border-radius: 12px;
+.info-label {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+  color: #7e6e65;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
 }
 
-.role-tag {
-  background: #4e3629;
-  color: #fff;
+.info-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2c1e16;
+  margin: 0;
 }
 
-.phone-tag {
-  background: rgba(78, 54, 41, 0.1);
-  color: #4e3629;
-}
-
-/* Navigation Tabs */
-.mydetails-tabs {
-  display: flex;
-  gap: 12px;
-  border-bottom: 2px solid #f4f4f5;
+/* Visual Stat Widgets */
+.snitch-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
   margin-bottom: 28px;
 }
 
-.tab-btn {
+.snitch-stat-card {
+  background: #fffdfb;
+  border: 1px solid #e6dfd5;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(78, 54, 41, 0.02);
+}
+
+.snitch-stat-card.total-spent-card {
+  background: linear-gradient(135deg, #fffdfb 0%, #f7f3ee 100%);
+  border-color: rgba(78, 54, 41, 0.25);
+}
+
+.stat-card-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
-  background: transparent;
-  border: none;
-  border-bottom: 3px solid transparent;
-  font-size: 15px;
-  font-weight: 600;
-  color: #71717a;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-bottom: -2px;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
 
-.tab-btn:hover {
-  color: #4e3629;
+.stat-card-header span {
+  font-size: 12px;
+  font-weight: 700;
+  color: #7e6e65;
+  text-transform: uppercase;
 }
 
-.tab-btn.active {
-  color: #4e3629;
-  border-bottom-color: #4e3629;
-}
-
-/* Profile Details Grid */
-.details-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
-}
-
-.detail-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  background: #fafafa;
-  border: 1px solid #f0f0f0;
-  border-radius: 14px;
-  padding: 18px;
-  transition: transform 0.15s ease;
-}
-
-.detail-card:hover {
-  transform: translateY(-2px);
-}
-
-.detail-icon {
-  width: 40px;
-  height: 40px;
+.stat-icon-clay {
+  width: 32px;
+  height: 32px;
   border-radius: 10px;
   background: rgba(78, 54, 41, 0.08);
   color: #4e3629;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
 }
 
-.detail-copy label {
+.stat-icon-clay.icon-emerald {
+  background: rgba(46, 125, 50, 0.1);
+  color: #2e7d32;
+}
+
+.stat-icon-clay.icon-warm {
+  background: rgba(217, 119, 6, 0.1);
+  color: #d97706;
+}
+
+.snitch-stat-card h2 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #2c1e16;
+  margin: 0 0 4px;
+}
+
+.stat-subtext {
   font-size: 12px;
-  font-weight: 600;
-  color: #a1a1aa;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  display: block;
-  margin-bottom: 4px;
+  color: #7e6e65;
 }
 
-.detail-copy p {
-  font-size: 15px;
-  font-weight: 600;
-  color: #1e1e1e;
-  margin: 0;
-}
-
-/* Payment History Metrics */
-.payment-metrics-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 14px;
-  margin-bottom: 24px;
-}
-
-.metric-card {
-  background: #fafafa;
-  border: 1px solid #f0f0f0;
-  border-radius: 14px;
-  padding: 16px;
-  text-align: center;
-}
-
-.metric-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #71717a;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.metric-val {
-  font-size: 22px;
-  font-weight: 700;
-  color: #1e1e1e;
-  margin: 6px 0 0;
-}
-
-.text-success { color: #16a34a; }
-.text-amber { color: #d97706; }
-
-/* Payment Filter Bar */
-.payment-filter-bar {
+/* Filter Controls Bar */
+.snitch-filter-bar {
   display: flex;
+  align-items: center;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
 }
 
-.search-payment-input {
+.search-box-wrap {
   flex: 1;
-  padding: 10px 16px;
-  border: 1px solid #e4e4e7;
-  border-radius: 12px;
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s ease;
+  min-width: 220px;
 }
 
-.search-payment-input:focus {
+.snitch-search-input {
+  width: 100%;
+  padding: 12px 18px;
+  border: 1px solid #e6dfd5;
+  border-radius: 14px;
+  font-size: 14px;
+  background: #fffdfb;
+  color: #2c1e16;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+  font-family: 'Outfit', sans-serif;
+}
+
+.snitch-search-input:focus {
   border-color: #4e3629;
 }
 
-.btn-refresh {
-  display: inline-flex;
-  align-items: center;
+.snitch-status-filter-pills {
+  display: flex;
   gap: 6px;
-  padding: 10px 16px;
-  background: #f4f4f5;
-  border: 1px solid #e4e4e7;
-  border-radius: 12px;
-  font-size: 14px;
+  background: #f7f3ee;
+  padding: 4px;
+  border-radius: 14px;
+  border: 1px solid #e6dfd5;
+}
+
+.status-pill-btn {
+  padding: 8px 14px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  font-size: 13px;
   font-weight: 600;
-  color: #3f3f46;
+  color: #7e6e65;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.status-pill-btn.active {
+  background: #4e3629;
+  color: #fffdfb;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(78, 54, 41, 0.12);
+}
+
+.btn-snitch-refresh {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid #e6dfd5;
+  background: #fffdfb;
+  color: #4e3629;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.btn-refresh:hover {
-  background: #e4e4e7;
+.btn-snitch-refresh:hover {
+  background: #4e3629;
+  color: #fffdfb;
+  border-color: #4e3629;
 }
 
-.spin-icon {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  100% { transform: rotate(360deg); }
-}
-
-/* Payment Table */
-.payment-table-wrapper {
-  overflow-x: auto;
-  border: 1px solid #e4e4e7;
-  border-radius: 14px;
-}
-
-.payment-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.payment-table th {
-  background: #f8f8f9;
-  padding: 14px 16px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #71717a;
-  text-transform: uppercase;
-  border-bottom: 1px solid #e4e4e7;
-}
-
-.payment-table td {
-  padding: 16px;
-  font-size: 14px;
-  border-bottom: 1px solid #f4f4f5;
-  color: #27272a;
-}
-
-.payment-table tr:last-child td {
-  border-bottom: none;
-}
-
-.mono-cell {
-  font-family: var(--mono);
-  font-size: 13px;
-}
-
-.amount-cell {
-  font-weight: 700;
-  color: #1e1e1e;
-}
-
-/* Status Badges */
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
+/* Payment Cards List */
+.snitch-payments-list {
+  display: flex;
+  flex-directilinear-gradient(135deg, #fffdfb 0%, #f9f7f3 100%);
+  border: 2px solid #e6dfd5;
   border-radius: 20px;
-  font-size: 12px;
+  padding: 24px 28px;
+  box-shadow: 0 6px 20px rgba(78, 54, 41, 0.04), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.snitch-payment-card:hover {
+  box-shadow: 0 12px 32px rgba(78, 54, 41, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+  border-color: #c3b091;
+  transform: translateY(-2px)
+}
+
+.snitch-payment-card:hover {
+  box-shadow: 0 8px 24px rgba(78, 54, 41, 0.06);
+  border-color: #c3b091;
+}
+
+.border-paid {
+  border-left: 5px solid #2e7d32;
+}
+
+.border-pending {
+  border-left: 5px solid #d97706;
+}
+
+.border-failed {
+  border-left: 5px solid #c62828;
+}
+
+.payment-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.payment-left-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.status-bubble {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items:linear-gradient(135deg, rgba(46, 125, 50, 0.15) 0%, rgba(46, 125, 50, 0.08) 100%);
+  color: #2e7d32;
+  border: 1px solid rgba(46, 125, 50, 0.2);
+}
+
+.status-bubble.pending {
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.15) 0%, rgba(217, 119, 6, 0.08) 100%);
+  color: #d97706;
+  border: 1px solid rgba(217, 119, 6, 0.2);
+}
+
+.status-bubble.failed {
+  background: linear-gradient(135deg, rgba(198, 40, 40, 0.15) 0%, rgba(198, 40, 40, 0.08) 100%);
+  color: #c62828;
+  border: 1px solid rgba(198, 40, 40, 0.2)ba(217, 119, 6, 0.1);
+  color: #d97706;
+}
+
+.status-bubble.failed {
+  background: rgba(198, 40, 40, 0.1);
+  color: #c62828;
+}
+
+.payment-id-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.order-code-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lbl-order {
+  font-size: 11px;
+  font-weight: 800;
+  color: #7e6e65;
+  letter-spacing: 0.5px;
+}
+
+.val-code {
+  font-family: var(--mono);
+  font-size: 14px;
   font-weight: 700;
-  text-transform: capitalize;
+  color: #2c1e16;
+}
+c3b091;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.btn-copy-sm:hover {
+  color: #4e3629;
+  background: rgba(195, 176, 145, 0.1)lor 0.15s ease;
+}
+
+.btn-copy-sm:hover {
+  color: #4e3629;
+}
+
+.text-check {
+  color: #2e7d32;
+}
+
+.payment-date {
+  font-size: 12px;
+  color: #7e6e65;
+}
+
+.payment-right-group {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.price-tag-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.price-tag-wrap .symbol {
+  font-size: 16px;
+  font-weight: 700;
+  color: #4e3629;
+}
+
+.price-tag-wrap .price {
+  font-size: 24px;
+  font-weight: 800;
+  color: #2c1e16;
+  letter-spacing: -0.5px;
+}
+
+.badge-status {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
 }
 
 .status-paid {
-  background: rgba(22, 163, 74, 0.1);
-  color: #15803d;
+  background: rgba(46, 125, 50, 0.12);
+  color: #2e7d32;
 }
 
 .status-pending {
-  background: rgba(217, 119, 6, 0.1);
+  background: rgba(217, 119, 6, 0.12);
   color: #b45309;
 }
 
 .status-failed {
-  background: rgba(220, 38, 38, 0.1);
-  color: #b91c1c;
+  background: rgba(198, 40, 40, 0.12);
+  color: #c62828;
+}
+
+.caret-arrow {
+  color: #7e6e65;
+  transition: transform 0.2s ease;
+}
+
+.caret-arrow.rotated {
+  transform: rotate(180deg);
+}
+
+/* Collapsible Drawer Content */
+.payment-drawer-content {
+  margin-top: 16px;
+}
+
+.drawer-hr {
+  height: 1px;
+  background: #e6dfd5;
+  margin-bottom: 16px;
+}
+
+.drawer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.drawer-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cell-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #7e6e65;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cell-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c1e16;
+}
+
+.cell-val-copy {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c1e16;
+}
+
+.mono {
+  font-family: var(--mono);
 }
 
 /* Empty & Loading States */
-.payment-loading-state,
-.payment-empty-state,
-.payment-error-state {
+.snitch-state-box {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px;
+  padding: 60px 24px;
+  background: #fffdfb;
+  border: 1px solid #e6dfd5;
+  border-radius: 20px;
   text-align: center;
   gap: 12px;
-  color: #71717a;
+  color: #7e6e65;
 }
 
-.payment-empty-state h4 {
-  font-size: 18px;
+.snitch-state-box h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
   font-weight: 700;
-  color: #1e1e1e;
+  color: #2c1e16;
   margin: 0;
 }
 
-.btn-shop-now, .btn-retry {
+.btn-snitch-action {
   margin-top: 8px;
-  padding: 10px 20px;
+  padding: 12px 24px;
   background: #4e3629;
-  color: #fff;
+  color: #fffdfb;
   border: none;
-  border-radius: 20px;
+  border-radius: 9999px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  box-shadow: 0 4px 12px rgba(78, 54, 41, 0.18);
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
-.btn-shop-now:hover, .btn-retry:hover {
-  opacity: 0.9;
+.btn-snitch-action:hover {
+  transform: translateY(-1px);
+  background: #3d2b20;
 }

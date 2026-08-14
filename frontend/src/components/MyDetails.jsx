@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { motion } from 'framer-motion';
-import { User, CreditCard, Shield, Phone, Mail, Calendar, CheckCircle2, Clock, XCircle, ArrowLeft, RefreshCw, ShoppingBag } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  User, CreditCard, Shield, Phone, Mail, Calendar, 
+  CheckCircle2, Clock, XCircle, ArrowLeft, RefreshCw, 
+  ShoppingBag, Copy, Check, ChevronDown, Sparkles, Receipt
+} from 'lucide-react';
 import usecart from '../cart/hooks/usecart';
 import { getme } from '../auth/service/auth.api';
 import { authSuccess } from '../auth/auth.slice';
@@ -21,7 +25,12 @@ export default function MyDetails() {
   const [payments, setPayments] = useState([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
   const [paymentsError, setPaymentsError] = useState(null);
+  
+  // Search and Filter State
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [expandedPaymentId, setExpandedPaymentId] = useState(null);
+  const [copiedId, setCopiedId] = useState(null);
 
   // Sync tab with URL param
   useEffect(() => {
@@ -76,279 +85,388 @@ export default function MyDetails() {
     fetchPayments();
   }, []);
 
-  const totalSpent = payments
-    .filter((p) => p.status === 'paid')
-    .reduce((sum, p) => sum + (p.amount ? p.amount / 100 : 0), 0);
+  const copyToClipboard = (text, id) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
-  const paidCount = payments.filter((p) => p.status === 'paid').length;
+  // Metrics
+  const paidPayments = payments.filter((p) => p.status === 'paid');
+  const totalSpent = paidPayments.reduce((sum, p) => sum + (p.amount ? p.amount / 100 : 0), 0);
+  const paidCount = paidPayments.length;
   const pendingCount = payments.filter((p) => p.status === 'pending').length;
+  const avgOrderValue = paidCount > 0 ? (totalSpent / paidCount).toFixed(0) : 0;
 
+  // Filtered Payments
   const filteredPayments = payments.filter((p) => {
-    const q = searchTerm.toLowerCase();
-    return (
-      (p.orderId && p.orderId.toLowerCase().includes(q)) ||
-      (p.paymentId && p.paymentId.toLowerCase().includes(q)) ||
-      (p.status && p.status.toLowerCase().includes(q))
-    );
+    const matchesSearch =
+      (p.orderId && p.orderId.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (p.paymentId && p.paymentId.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
+    return matchesSearch && matchesStatus;
   });
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'paid':
-        return (
-          <span className="status-badge status-paid">
-            <CheckCircle2 size={14} /> Paid
-          </span>
-        );
-      case 'pending':
-        return (
-          <span className="status-badge status-pending">
-            <Clock size={14} /> Pending
-          </span>
-        );
-      case 'failed':
-        return (
-          <span className="status-badge status-failed">
-            <XCircle size={14} /> Failed
-          </span>
-        );
-      default:
-        return <span className="status-badge">{status}</span>;
-    }
+  const toggleExpand = (id) => {
+    setExpandedPaymentId(expandedPaymentId === id ? null : id);
   };
 
   return (
-    <div className="mydetails-page-wrapper">
-      <div className="mydetails-container glass-panel">
-        {/* Page Top Header */}
-        <div className="mydetails-header">
-          <button className="btn-back" onClick={() => navigate('/dashboard')}>
-            <ArrowLeft size={18} />
-            <span>Back to Shop</span>
+    <div className="snitch-mydetails-wrapper">
+      <div className="snitch-mydetails-container glass-panel">
+        
+        {/* Navigation Bar Header */}
+        <div className="snitch-top-nav-bar">
+          <button className="btn-snitch-back" onClick={() => navigate('/dashboard')}>
+            <ArrowLeft size={16} />
+            <span>Storefront</span>
           </button>
-          <h2>My Account</h2>
+
+          <div className="snitch-brand-badge">
+            <Sparkles size={14} className="sparkle-gold" />
+            <span>Highkeytees Account</span>
+          </div>
         </div>
 
-        {/* User Hero Summary */}
-        <div className="user-hero-card">
-          <div className="user-avatar-wrap">
-            <User size={36} />
+        {/* Highkeytees Warm Clay Hero Banner */}
+        <motion.div 
+          className="snitch-user-hero"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <div className="hero-clay-glow" />
+
+          <div className="hero-avatar-border">
+            <div className="hero-avatar-box">
+              <User size={38} />
+            </div>
           </div>
-          <div className="user-hero-info">
-            <h3>{userInfo?.username || 'Valued Customer'}</h3>
-            <p className="user-email">{userInfo?.email || 'No email provided'}</p>
-            <div className="user-meta-tags">
-              <span className="role-tag">
+
+          <div className="hero-user-details">
+            <div className="hero-title-row">
+              <h1 className="hero-username">{userInfo?.username || 'Valued Customer'}</h1>
+              <span className={`snitch-role-badge role-${userInfo?.role || 'buyer'}`}>
                 <Shield size={12} />
                 {(userInfo?.role || 'buyer').toUpperCase()}
               </span>
+            </div>
+
+            <p className="hero-user-email">{userInfo?.email || 'No email associated'}</p>
+
+            <div className="hero-info-chips">
               {userInfo?.phonenumber && (
-                <span className="phone-tag">
-                  <Phone size={12} />
-                  {userInfo.phonenumber}
-                </span>
+                <div className="snitch-chip">
+                  <Phone size={13} />
+                  <span>+91 {userInfo.phonenumber}</span>
+                </div>
               )}
+              <div className="snitch-chip">
+                <Calendar size={13} />
+                <span>
+                  Member since {userInfo?.createdAt ? new Date(userInfo.createdAt).getFullYear() : '2026'}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Navigation Tabs */}
-        <div className="mydetails-tabs">
+        {/* Snitch Clay Segmented Tabs */}
+        <div className="snitch-tab-switcher">
           <button
-            className={`tab-btn ${activeTab === 'details' ? 'active' : ''}`}
+            className={`tab-btn-pill ${activeTab === 'details' ? 'active' : ''}`}
             onClick={() => handleTabChange('details')}
           >
             <User size={16} />
             <span>User Details</span>
           </button>
           <button
-            className={`tab-btn ${activeTab === 'payments' ? 'active' : ''}`}
+            className={`tab-btn-pill ${activeTab === 'payments' ? 'active' : ''}`}
             onClick={() => handleTabChange('payments')}
           >
             <CreditCard size={16} />
-            <span>Payment History ({payments.length})</span>
+            <span>Payment History</span>
+            <span className="count-pill">{payments.length}</span>
           </button>
         </div>
 
-        {/* Tab Content 1: User Profile Details */}
+        {/* Tab 1: Profile Details */}
         {activeTab === 'details' && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="tab-content profile-tab-content"
+            className="snitch-tab-content"
           >
-            <div className="details-grid">
-              <div className="detail-card">
-                <div className="detail-icon"><User size={20} /></div>
-                <div className="detail-copy">
-                  <label>Full Name / Username</label>
-                  <p>{userInfo?.username || 'N/A'}</p>
+            <div className="snitch-details-grid">
+              <div className="snitch-detail-card">
+                <div className="card-icon-circle"><User size={20} /></div>
+                <div className="card-info-copy">
+                  <span className="info-label">Full Name / Username</span>
+                  <p className="info-value">{userInfo?.username || 'Not Provided'}</p>
                 </div>
               </div>
 
-              <div className="detail-card">
-                <div className="detail-icon"><Mail size={20} /></div>
-                <div className="detail-copy">
-                  <label>Email Address</label>
-                  <p>{userInfo?.email || 'N/A'}</p>
+              <div className="snitch-detail-card">
+                <div className="card-icon-circle"><Mail size={20} /></div>
+                <div className="card-info-copy">
+                  <span className="info-label">Email Address</span>
+                  <p className="info-value">{userInfo?.email || 'Not Provided'}</p>
                 </div>
               </div>
 
-              <div className="detail-card">
-                <div className="detail-icon"><Phone size={20} /></div>
-                <div className="detail-copy">
-                  <label>Mobile Number</label>
-                  <p>{userInfo?.phonenumber ? String(userInfo.phonenumber) : 'Not provided'}</p>
+              <div className="snitch-detail-card">
+                <div className="card-icon-circle"><Phone size={20} /></div>
+                <div className="card-info-copy">
+                  <span className="info-label">Phone Number</span>
+                  <p className="info-value">{userInfo?.phonenumber ? `+91 ${userInfo.phonenumber}` : 'Not Provided'}</p>
                 </div>
               </div>
 
-              <div className="detail-card">
-                <div className="detail-icon"><Shield size={20} /></div>
-                <div className="detail-copy">
-                  <label>Account Role</label>
-                  <p>{userInfo?.role ? userInfo.role.toUpperCase() : 'BUYER'}</p>
+              <div className="snitch-detail-card">
+                <div className="card-icon-circle"><Shield size={20} /></div>
+                <div className="card-info-copy">
+                  <span className="info-label">Account Privilege</span>
+                  <p className="info-value">{(userInfo?.role || 'BUYER').toUpperCase()}</p>
                 </div>
               </div>
 
-              <div className="detail-card">
-                <div className="detail-icon"><Calendar size={20} /></div>
-                <div className="detail-copy">
-                  <label>Member Since</label>
-                  <p>
-                    {userInfo?.createdAt
-                      ? new Date(userInfo.createdAt).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })
-                      : 'Recently Joined'}
-                  </p>
+              <div className="snitch-detail-card">
+                <div className="card-icon-circle"><ShoppingBag size={20} /></div>
+                <div className="card-info-copy">
+                  <span className="info-label">Completed Transactions</span>
+                  <p className="info-value">{paidCount} Successful Payments</p>
                 </div>
               </div>
 
-              <div className="detail-card">
-                <div className="detail-icon"><ShoppingBag size={20} /></div>
-                <div className="detail-copy">
-                  <label>Total Completed Payments</label>
-                  <p>{paidCount} Successful Orders</p>
+              <div className="snitch-detail-card">
+                <div className="card-icon-circle"><Receipt size={20} /></div>
+                <div className="card-info-copy">
+                  <span className="info-label">Total Amount Paid</span>
+                  <p className="info-value">₹{totalSpent.toLocaleString()}</p>
                 </div>
               </div>
             </div>
           </motion.div>
         )}
 
-        {/* Tab Content 2: Payment History */}
+        {/* Tab 2: Payment History */}
         {activeTab === 'payments' && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="tab-content payments-tab-content"
+            className="snitch-tab-content"
           >
-            {/* Payment Summary Metrics */}
-            <div className="payment-metrics-row">
-              <div className="metric-card">
-                <span className="metric-label">Total Spent</span>
-                <h4 className="metric-val">₹{totalSpent.toLocaleString()}</h4>
+            {/* Visual Stat Cards */}
+            <div className="snitch-stats-grid">
+              <div className="snitch-stat-card total-spent-card">
+                <div className="stat-card-header">
+                  <span>Total Spent</span>
+                  <div className="stat-icon-clay"><Receipt size={18} /></div>
+                </div>
+                <h2>₹{totalSpent.toLocaleString()}</h2>
+                <span className="stat-subtext">Lifetime purchases</span>
               </div>
-              <div className="metric-card">
-                <span className="metric-label">Total Orders</span>
-                <h4 className="metric-val">{payments.length}</h4>
+
+              <div className="snitch-stat-card">
+                <div className="stat-card-header">
+                  <span>Successful</span>
+                  <div className="stat-icon-clay icon-emerald"><CheckCircle2 size={18} /></div>
+                </div>
+                <h2>{paidCount}</h2>
+                <span className="stat-subtext">Verified orders</span>
               </div>
-              <div className="metric-card">
-                <span className="metric-label">Successful</span>
-                <h4 className="metric-val text-success">{paidCount}</h4>
+
+              <div className="snitch-stat-card">
+                <div className="stat-card-header">
+                  <span>Pending</span>
+                  <div className="stat-icon-clay icon-warm"><Clock size={18} /></div>
+                </div>
+                <h2>{pendingCount}</h2>
+                <span className="stat-subtext">In progress</span>
               </div>
-              <div className="metric-card">
-                <span className="metric-label">Pending</span>
-                <h4 className="metric-val text-amber">{pendingCount}</h4>
+
+              <div className="snitch-stat-card">
+                <div className="stat-card-header">
+                  <span>Average Order</span>
+                  <div className="stat-icon-clay"><ShoppingBag size={18} /></div>
+                </div>
+                <h2>₹{Number(avgOrderValue).toLocaleString()}</h2>
+                <span className="stat-subtext">Per transaction</span>
               </div>
             </div>
 
-            {/* Filter and Refresh Bar */}
-            <div className="payment-filter-bar">
-              <input
-                type="text"
-                placeholder="Search order ID, payment ID or status..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-payment-input"
-              />
-              <button className="btn-refresh" onClick={fetchPayments} disabled={loadingPayments}>
-                <RefreshCw size={16} className={loadingPayments ? 'spin-icon' : ''} />
-                <span>Refresh</span>
+            {/* Filter & Search Bar */}
+            <div className="snitch-filter-bar">
+              <div className="search-box-wrap">
+                <input
+                  type="text"
+                  placeholder="Search by Order ID or Payment ID..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="snitch-search-input"
+                />
+              </div>
+
+              <div className="snitch-status-filter-pills">
+                {['all', 'paid', 'pending', 'failed'].map((st) => (
+                  <button
+                    key={st}
+                    className={`status-pill-btn ${statusFilter === st ? 'active' : ''}`}
+                    onClick={() => setStatusFilter(st)}
+                  >
+                    {st === 'all' ? 'All Orders' : st.charAt(0).toUpperCase() + st.slice(1)}
+                  </button>
+                ))}
+              </div>
+
+              <button className="btn-snitch-refresh" onClick={fetchPayments} title="Refresh Transactions">
+                <RefreshCw size={16} className={loadingPayments ? 'spin' : ''} />
               </button>
             </div>
 
-            {/* Payment Table / List */}
+            {/* Payment List Render */}
             {loadingPayments ? (
-              <div className="payment-loading-state">
-                <RefreshCw size={28} className="spin-icon" />
-                <p>Loading your payment history...</p>
+              <div className="snitch-state-box">
+                <RefreshCw size={32} className="spin text-clay" />
+                <p>Retrieving your payment details...</p>
               </div>
             ) : paymentsError ? (
-              <div className="payment-error-state">
+              <div className="snitch-state-box">
+                <XCircle size={36} className="text-danger" />
                 <p>{paymentsError}</p>
-                <button className="btn-retry" onClick={fetchPayments}>Retry</button>
+                <button className="btn-snitch-action" onClick={fetchPayments}>Try Again</button>
               </div>
             ) : filteredPayments.length === 0 ? (
-              <div className="payment-empty-state">
-                <CreditCard size={48} />
-                <h4>No Payments Found</h4>
-                <p>
-                  {searchTerm
-                    ? 'No payment records matching your filter.'
-                    : 'You haven\'t completed any orders yet.'}
-                </p>
-                <button className="btn-shop-now" onClick={() => navigate('/dashboard')}>
-                  Explore Products
+              <div className="snitch-state-box">
+                <CreditCard size={48} className="text-muted" />
+                <h3>No Payment Records Found</h3>
+                <p>{searchTerm || statusFilter !== 'all' ? 'No orders match your filter.' : 'You haven\'t completed any purchases yet.'}</p>
+                <button className="btn-snitch-action" onClick={() => navigate('/dashboard')}>
+                  Shop Now
                 </button>
               </div>
             ) : (
-              <div className="payment-table-wrapper">
-                <table className="payment-table">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Order ID</th>
-                      <th>Payment ID</th>
-                      <th>Amount</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredPayments.map((payment) => (
-                      <tr key={payment._id || payment.orderId}>
-                        <td className="date-cell">
-                          {payment.createdAt
-                            ? new Date(payment.createdAt).toLocaleString('en-IN', {
-                                day: '2-digit',
-                                month: 'short',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })
-                            : 'N/A'}
-                        </td>
-                        <td className="mono-cell order-id-cell">
-                          {payment.orderId || 'N/A'}
-                        </td>
-                        <td className="mono-cell payment-id-cell">
-                          {payment.paymentId || '—'}
-                        </td>
-                        <td className="amount-cell">
-                          ₹{(payment.amount ? payment.amount / 100 : 0).toLocaleString()}
-                        </td>
-                        <td>{getStatusBadge(payment.status)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="snitch-payments-list">
+                <AnimatePresence>
+                  {filteredPayments.map((payment, index) => {
+                    const isPaid = payment.status === 'paid';
+                    const isPending = payment.status === 'pending';
+                    const amountRupees = payment.amount ? payment.amount / 100 : 0;
+                    const isExpanded = expandedPaymentId === (payment._id || payment.orderId);
+
+                    return (
+                      <motion.div
+                        key={payment._id || payment.orderId || index}
+                        className={`snitch-payment-card ${isPaid ? 'border-paid' : isPending ? 'border-pending' : 'border-failed'}`}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.04 }}
+                      >
+                        {/* Card Header Row */}
+                        <div className="payment-header-row" onClick={() => toggleExpand(payment._id || payment.orderId)}>
+                          <div className="payment-left-group">
+                            <div className={`status-bubble ${payment.status}`}>
+                              {isPaid ? <CheckCircle2 size={20} /> : isPending ? <Clock size={20} /> : <XCircle size={20} />}
+                            </div>
+
+                            <div className="payment-id-meta">
+                              <div className="order-code-line">
+                                <span className="lbl-order">ORDER</span>
+                                <span className="val-code">{payment.orderId || 'N/A'}</span>
+                                <button
+                                  className="btn-copy-sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    copyToClipboard(payment.orderId, payment.orderId);
+                                  }}
+                                  title="Copy Order ID"
+                                >
+                                  {copiedId === payment.orderId ? <Check size={12} className="text-check" /> : <Copy size={12} />}
+                                </button>
+                              </div>
+
+                              <span className="payment-date">
+                                {payment.createdAt
+                                  ? new Date(payment.createdAt).toLocaleString('en-IN', {
+                                      day: '2-digit',
+                                      month: 'short',
+                                      year: 'numeric',
+                                      hour: '2-digit',
+                                      minute: '2-digit',
+                                    })
+                                  : 'Recent'}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="payment-right-group">
+                            <div className="price-tag-wrap">
+                              <span className="symbol">₹</span>
+                              <span className="price">{amountRupees.toLocaleString()}</span>
+                            </div>
+
+                            <span className={`badge-status status-${payment.status}`}>
+                              {payment.status.toUpperCase()}
+                            </span>
+
+                            <ChevronDown size={18} className={`caret-arrow ${isExpanded ? 'rotated' : ''}`} />
+                          </div>
+                        </div>
+
+                        {/* Collapsible Details Drawer */}
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="payment-drawer-content"
+                          >
+                            <div className="drawer-hr" />
+                            <div className="drawer-grid">
+                              <div className="drawer-cell">
+                                <span className="cell-label">Razorpay Payment ID</span>
+                                <div className="cell-val-copy">
+                                  <span>{payment.paymentId || 'Pending Verification'}</span>
+                                  {payment.paymentId && (
+                                    <button
+                                      className="btn-copy-sm"
+                                      onClick={() => copyToClipboard(payment.paymentId, payment.paymentId)}
+                                    >
+                                      {copiedId === payment.paymentId ? <Check size={12} className="text-check" /> : <Copy size={12} />}
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="drawer-cell">
+                                <span className="cell-label">Currency & Gateway</span>
+                                <span className="cell-val">{payment.currency || 'INR'} (Razorpay Checkout)</span>
+                              </div>
+
+                              <div className="drawer-cell">
+                                <span className="cell-label">Signature Hash</span>
+                                <span className="cell-val mono">{payment.signature ? `${payment.signature.slice(0, 16)}...` : 'N/A'}</span>
+                              </div>
+
+                              <div className="drawer-cell">
+                                <span className="cell-label">Database Key</span>
+                                <span className="cell-val mono">{payment._id}</span>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </motion.div>
+                    );
+                  })}
+                </AnimatePresence>
               </div>
             )}
           </motion.div>
         )}
+
       </div>
     </div>
   );

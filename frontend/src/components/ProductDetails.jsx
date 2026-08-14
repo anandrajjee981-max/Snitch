@@ -13,7 +13,7 @@ export default function ProductDetails() {
   const productId = id;
   const onBack = () => navigate('/dashboard');
   const onNavigateToProduct = (pid) => navigate(`/product/${pid}`);
-  const { addtocartapi, addToCart } = usecart();
+  const { addtocartapi, addToCart ,getcartapi} = usecart();  
   const { handleuserproduct } = useproduct();
 
   const products = useSelector((state) => state.products.userallproduct);
@@ -22,6 +22,30 @@ export default function ProductDetails() {
     console.log(products);
     
   },[])
+  async function addtobag() {
+    try {
+      
+      await getcartapi(true); // Force refresh cart after adding item
+    } catch (err) {
+      console.error("Error adding to cart:", err);
+    }
+  }
+ useEffect(() => {
+    const loadProducts = async () => {
+      if (products.length === 0) {
+        try {
+          await handleuserproduct();
+        } catch (e) {
+          console.error("Failed to load products in details view:", e);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
+    };
+    loadProducts();
+  }, [products.length, handleuserproduct]);
 
   // Fetch products if store is empty
   useEffect(() => {
@@ -61,6 +85,7 @@ export default function ProductDetails() {
     setSelectedVariantIndex(null);
     setActiveImageIndex(0);
   }, [productId]);
+
 
   // Entrance animation
   useEffect(() => {

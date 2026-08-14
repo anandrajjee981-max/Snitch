@@ -11,7 +11,13 @@
   padding: 0;
 }
 
-html, body {
+html {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  width: 100%;
   overflow-x: hidden;
   background-color: $beige-warm;
   color: $text-dark;
@@ -72,8 +78,7 @@ ul {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  max-width: 100%;
+  width: 100%;
   height: 80px;
   z-index: 1000;
   display: flex;
@@ -83,6 +88,7 @@ ul {
   transition: $transition-smooth;
   box-shadow: 0 4px 30px rgba(78, 54, 41, 0.02);
   overflow: visible;
+  box-sizing: border-box;
 
   @media (max-width: 992px) {
     padding: 0 2rem;
@@ -141,16 +147,17 @@ ul {
   .nav-links {
     display: flex;
     gap: 3rem;
+    color:black;
 
     @media (max-width: 992px) {
       display: none;
     }
 
-    a {
+    button {
       font-size: 0.95rem;
       font-weight: 500;
       letter-spacing: 0.5px;
-      color: $text-muted;
+      color: black;
       position: relative;
       padding: 0.5rem 0;
       transition: $transition-fast;
@@ -595,15 +602,16 @@ ul {
 .hero {
   position: relative;
   min-height: 95vh;
+  width: 100%;
   display: flex;
   align-items: center;
-  padding: 0 4rem;
+  padding: 0;
   background-color: $beige-warm;
   overflow: hidden;
   margin-bottom: 2rem;
 
   @media (max-width: 768px) {
-    padding: 6rem 1.5rem 3rem;
+    padding: 0;
     flex-direction: column;
     justify-content: center;
     gap: 2rem;
@@ -620,12 +628,20 @@ ul {
     background: radial-gradient(circle, rgba($sand-accent, 0.15) 0%, rgba($beige-warm, 0) 70%);
     z-index: 0;
     pointer-events: none;
+    overflow: hidden;
   }
 
   .hero-content {
     flex: 1;
     z-index: 2;
     max-width: 600px;
+    padding: 0 4rem;
+    width: 100%;
+
+    @media (max-width: 768px) {
+      padding: 6rem 1.5rem 3rem;
+      width: 100%;
+    }
 
     .hero-tag {
       font-size: 0.85rem;
@@ -715,6 +731,11 @@ ul {
     z-index: 2;
     width: 100%;
     min-height: 450px;
+    padding: 0 4rem;
+
+    @media (max-width: 768px) {
+      padding: 0 1.5rem;
+    }
 
     .hero-main-img-wrapper {
       position: relative;
