@@ -11,6 +11,7 @@ import buyerrouter from "./routes/buyer.route.js";
 import cartrouter from "./routes/cart.route.js";
 import paymentrouter from "./routes/payment.route.js";
 import helmet from "helmet";
+import morgan from "morgan";
 
 const app = express()
 app.use(
@@ -66,6 +67,7 @@ app.use(cors({ origin: [
 
 // Initialize passport
 app.use(passport.initialize())
+app.use(morgan("combined"))
 
 const CALLBACK_BASE = process.env.BACKEND_URL || 'http://localhost:5173';
 

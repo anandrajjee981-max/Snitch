@@ -75,19 +75,39 @@ export const updatePaymentStatus = async (req, res) => {
     payment.signature = signature || "verified_sig";
     await payment.save();
 
+    const cart = await cartModel.findOne({ user: req.user._id });
+    const cartItems = cart?.items || [];
+
+    for (const item of cartItems) {
+      if (!item?.productid) continue;
+
+      if (item.origin === 'Variant') {
+        const product = await productModel.findOne({
+          variants: { $elemMatch: { _id: item.productid } }
+        });
+
+        if (!product) continue;
+
+        const variant = product.variants.find((variantItem) => variantItem._id.toString() === item.productid.toString());
+        if (!variant) continue;
+
+        variant.stock = Math.max(0, Number(variant.stock || 0) - Number(item.quantity || 0));
+        await product.save();
+      } else {
+        const product = await productModel.findById(item.productid);
+        if (!product) continue;
+
+        product.stock = Math.max(0, Number(product.stock || 0) - Number(item.quantity || 0));
+        await product.save();
+      }
+    }
+
     // Clear cart upon successful payment
     await cartModel.findOneAndUpdate(
       { user: req.user._id },
       { $set: { items: [] } }
     );
-    await cartModel.findOneAndUpdate(
-      { user: req.user._id },
-      { $set: { totalCartAmount: 0 } }
-    );
-await productModel.updateMany(
-      { _id: { $in: payment.items.map(item => item.productId) } },
-      { $inc: { stock: -1 } }
-    );
+
     res.status(200).json({ message: "Payment status updated successfully", payment });
   } catch (error) {
     console.error("Error in updatePaymentStatus:", error);
