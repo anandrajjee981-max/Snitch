@@ -10,8 +10,50 @@ import productrouter from "./routes/product.route.js";
 import buyerrouter from "./routes/buyer.route.js";
 import cartrouter from "./routes/cart.route.js";
 import paymentrouter from "./routes/payment.route.js";
+import helmet from "helmet";
 
 const app = express()
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+
+   scriptSrc: [
+  "'self'",
+  "https://apis.google.com",
+  "https://checkout.razorpay.com",
+],
+
+    styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: [
+  "'self'",
+  "https://ik.imagekit.io",   // images yahan load honge, scriptSrc mein nahi
+  "data:",
+],
+
+        connectSrc: ["'self'", 
+          "http://localhost:3000",
+          "https://snitch-7b46.onrender.com",
+          "https://ik.imagekit.io",   // agar fetch/API calls bhi ImageKit ko jaati hain
+          "https://api.razorpay.com", // Razorpay payment verification API
+        ],
+        frameSrc: [
+  "'self'",
+  "https://api.razorpay.com",
+  "https://checkout.razorpay.com",
+],
+      },
+    },
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    referrerPolicy: { policy: "no-referrer" },
+    hsts: {
+      maxAge: 31536000, // 1 year
+      includeSubDomains: true,
+      preload: false,
+    },
+  })
+);
 app.use(express.json())
 app.use(cookie())
 

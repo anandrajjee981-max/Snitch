@@ -32,18 +32,17 @@ const useauth = () => {
       return { success: false, error: message };
     }
   }
-  async function handlegetme(){
-    dispatch(authStart())
-try{
-const res = getme()
-dispatch(authSuccess(res.data))
-}
-catch(err){
-    const message = err?.message || 'Login failed';
+  async function handlegetme() {
+    dispatch(authStart());
+    try {
+      const res = await getme();
+      dispatch(authSuccess({ user: res?.user ?? null, token: null }));
+      return { success: true, user: res?.user ?? null };
+    } catch (error) {
+      const message = error?.message || 'Session refresh failed';
       dispatch(authFailure(message));
-}
-
-
+      return { success: false, error: message };
+    }
   }
 
   return { handleregister, handlelogin ,handlegetme };
