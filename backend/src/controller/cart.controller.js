@@ -137,7 +137,16 @@ export async function getcart(req, res) {
     const cart = aggregatedCartData[0];
     const cartResponse = cart.toObject ? cart.toObject() : cart;
     const items = Array.isArray(cartResponse.items) ? cartResponse.items : [];
-    cartResponse.items = await Promise.all(items.map(buildCartItemResponse));
+    const hydratedItems = await Promise.all(items.map(buildCartItemResponse));
+    const validItems = hydratedItems.filter(Boolean);
+
+    if (validItems.length !== items.length) {
+      cartResponse.items = validItems;
+      cart.items = validItems;
+      await cart.save();
+    } else {
+      cartResponse.items = validItems;
+    }
 
     return res.status(200).json({
       message: 'cart fetched successfully',

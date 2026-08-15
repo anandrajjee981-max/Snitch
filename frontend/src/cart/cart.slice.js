@@ -1,8 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const normalizeCartItems = (payload) => {
-  if (Array.isArray(payload)) return payload;
-  if (payload && Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload)) {
+    return payload.filter((item) => item && (item.productDetails || item.title || item.product?.title || item._id || item.productid || item.id));
+  }
+  if (payload && Array.isArray(payload.items)) {
+    return payload.items.filter((item) => item && (item.productDetails || item.title || item.product?.title || item._id || item.productid || item.id));
+  }
   return [];
 };
 

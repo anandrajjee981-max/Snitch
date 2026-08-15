@@ -1,4 +1,3 @@
-
 @media (prefers-color-scheme: dark) {
   :root {
     --text: #9ca3af;
@@ -118,6 +117,8 @@ code {
   text-align: left;
   animation: fadeInSnitchDropdown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   font-family: 'Outfit', -apple-system, sans-serif;
+  box-sizing: border-box;
+  max-width: calc(100vw - 24px);
 }
 
 @keyframes fadeInSnitchDropdown {
@@ -160,6 +161,7 @@ code {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
 }
 
 .dropdown-user-info .user-name {
@@ -205,6 +207,7 @@ code {
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   text-align: left;
+  box-sizing: border-box;
 }
 
 .dropdown-item:hover {
@@ -257,6 +260,7 @@ code {
   padding: 36px;
   box-shadow: 0 10px 30px -10px rgba(78, 54, 41, 0.08);
   text-align: left;
+  box-sizing: border-box;
 }
 
 .snitch-top-nav-bar {
@@ -280,6 +284,7 @@ code {
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(78, 54, 41, 0.04);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
 }
 
 .btn-snitch-back:hover {
@@ -300,6 +305,7 @@ code {
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.2px;
+  white-space: nowrap;
 }
 
 .sparkle-gold {
@@ -319,6 +325,7 @@ code {
   overflow: hidden;
   box-shadow: 0 12px 32px rgba(78, 54, 41, 0.18);
   margin-bottom: 32px;
+  box-sizing: border-box;
 }
 
 .hero-clay-glow {
@@ -357,6 +364,7 @@ code {
   flex-direction: column;
   gap: 6px;
   z-index: 1;
+  min-width: 0;
 }
 
 .hero-title-row {
@@ -383,6 +391,7 @@ code {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .role-buyer, .role-customer {
@@ -400,6 +409,7 @@ code {
   font-size: 14px;
   color: rgba(255, 253, 251, 0.8);
   margin: 0 0 4px;
+  word-break: break-word;
 }
 
 .hero-info-chips {
@@ -419,6 +429,7 @@ code {
   font-size: 12px;
   color: rgba(255, 253, 251, 0.95);
   backdrop-filter: blur(4px);
+  white-space: nowrap;
 }
 
 /* Snitch Clay Segmented Tabs */
@@ -448,6 +459,7 @@ code {
   font-family: 'Outfit', sans-serif;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
 }
 
 .tab-btn-pill:hover {
@@ -491,6 +503,7 @@ code {
   padding: 20px;
   box-shadow: 0 4px 12px rgba(78, 54, 41, 0.02);
   transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
 .snitch-detail-card:hover {
@@ -514,6 +527,7 @@ code {
 .card-info-copy {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .info-label {
@@ -530,6 +544,7 @@ code {
   font-weight: 700;
   color: #2c1e16;
   margin: 0;
+  word-break: break-word;
 }
 
 /* Visual Stat Widgets */
@@ -546,6 +561,7 @@ code {
   border-radius: 18px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(78, 54, 41, 0.02);
+  box-sizing: border-box;
 }
 
 .snitch-stat-card.total-spent-card {
@@ -652,6 +668,7 @@ code {
   font-family: 'Outfit', sans-serif;
   cursor: pointer;
   transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .status-pill-btn.active {
@@ -664,6 +681,7 @@ code {
 .btn-snitch-refresh {
   width: 44px;
   height: 44px;
+  min-width: 44px;
   border-radius: 14px;
   border: 1px solid #e6dfd5;
   background: #fffdfb;
@@ -693,6 +711,7 @@ code {
   box-shadow: 0 6px 20px rgba(78, 54, 41, 0.04), inset 0 1px 2px rgba(255, 255, 255, 0.6);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .snitch-payment-card:hover {
@@ -723,17 +742,20 @@ code {
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
+  gap: 12px;
 }
 
 .payment-left-group {
   display: flex;
   align-items: center;
   gap: 16px;
+  min-width: 0; /* allows text-overflow ellipsis to work inside flex */
 }
 
 .status-bubble {
   width: 44px;
   height: 44px;
+  min-width: 44px;
   border-radius: 14px;
   display: flex;
   align-items: center;
@@ -759,6 +781,7 @@ code {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
 
 .order-code-line {
@@ -779,6 +802,9 @@ code {
   font-size: 14px;
   font-weight: 700;
   color: #2c1e16;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .btn-copy-sm {
@@ -810,6 +836,7 @@ code {
   display: flex;
   align-items: center;
   gap: 20px;
+  flex-shrink: 0;
 }
 
 .price-tag-wrap {
@@ -837,6 +864,7 @@ code {
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .status-paid {
@@ -857,6 +885,7 @@ code {
 .caret-arrow {
   color: #7e6e65;
   transition: transform 0.2s ease;
+  flex-shrink: 0;
 }
 
 .caret-arrow.rotated {
@@ -884,6 +913,7 @@ code {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
 
 .cell-label {
@@ -898,6 +928,7 @@ code {
   font-size: 13px;
   font-weight: 600;
   color: #2c1e16;
+  word-break: break-word;
 }
 
 .cell-val-copy {
@@ -908,6 +939,7 @@ code {
   font-size: 13px;
   font-weight: 600;
   color: #2c1e16;
+  word-break: break-all;
 }
 
 .mono {
@@ -927,6 +959,8 @@ code {
   text-align: center;
   gap: 12px;
   color: #7e6e65;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .snitch-state-box h3 {
@@ -949,10 +983,327 @@ code {
   font-family: 'Outfit', sans-serif;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(78, 54, 41, 0.18);
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition: transform 0.15s ease, opacity 0.15s ease, background-color 0.15s ease;
 }
 
 .btn-snitch-action:hover {
   transform: translateY(-1px);
   background: #3d2b20;
+}
+
+/* ============================================================= */
+/* MOBILE RESPONSIVENESS — reviewed section by section            */
+/* Breakpoints: 1024 (tablet) / 900 (small tablet) / 600 (phone)  */
+/* / 420 (small phone)                                             */
+/* ============================================================= */
+
+/* ---------- Tablet: 1024px ---------- */
+@media (max-width: 1024px) {
+  .snitch-mydetails-wrapper {
+    padding: 0 24px;
+  }
+
+  .snitch-mydetails-container {
+    padding: 28px;
+  }
+}
+
+/* ---------- Small tablet: 900px ---------- */
+@media (max-width: 900px) {
+  .snitch-stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  .snitch-details-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+}
+
+/* ---------- Phone: 600px ---------- */
+@media (max-width: 600px) {
+  /* Navbar dropdown: keep it on-screen and full width on small phones */
+  .user-menu-dropdown {
+    width: min(280px, calc(100vw - 24px));
+    right: -8px;
+  }
+
+  /* MyDetails wrapper/container */
+  .snitch-mydetails-wrapper {
+    padding: 0 16px;
+    margin: 20px 0 40px;
+  }
+
+  .snitch-mydetails-container {
+    padding: 20px 16px;
+    border-radius: 18px;
+  }
+
+  /* Top nav: back button + brand badge were wrapping onto each other */
+  .snitch-top-nav-bar {
+    flex-wrap: wrap;
+    row-gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .btn-snitch-back {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .snitch-brand-badge {
+    font-size: 11px;
+    padding: 5px 12px;
+  }
+
+  /* User hero: stack avatar above details instead of side-by-side —
+     this is what was pushing the username text off the card */
+  .snitch-user-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px;
+    border-radius: 18px;
+  }
+
+  .hero-clay-glow {
+    width: 200px;
+    height: 200px;
+  }
+
+  .hero-avatar-border {
+    width: 60px;
+    height: 60px;
+  }
+
+  .hero-user-details {
+    width: 100%;
+  }
+
+  .hero-title-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .hero-username {
+    font-size: 20px;
+    word-break: break-word;
+  }
+
+  .hero-user-email {
+    font-size: 12px;
+  }
+
+  .hero-info-chips {
+    gap: 8px;
+  }
+
+  .snitch-chip {
+    font-size: 11px;
+    padding: 4px 10px;
+    white-space: normal;
+  }
+
+  /* Tabs: allow wrap onto 2 rows instead of squishing icon+text+badge */
+  .snitch-tab-switcher {
+    flex-wrap: wrap;
+    padding: 5px;
+    gap: 5px;
+  }
+
+  .tab-btn-pill {
+    flex: 1 1 auto;
+    min-width: 130px;
+    padding: 10px 12px;
+    font-size: 13px;
+    gap: 6px;
+  }
+
+  .count-pill {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  /* Details grid: one card per row */
+  .snitch-details-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .snitch-detail-card {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .card-icon-circle {
+    width: 38px;
+    height: 38px;
+  }
+
+  .info-value {
+    font-size: 14px;
+  }
+
+  /* Stat cards: go 2-up instead of squeezing 3-4 tight cards */
+  .snitch-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .snitch-stat-card {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .snitch-stat-card h2 {
+    font-size: 20px;
+  }
+
+  .stat-icon-clay {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* Filter bar: search full width on top, pills + refresh in a row below */
+  .snitch-filter-bar {
+    gap: 10px;
+  }
+
+  .search-box-wrap {
+    min-width: 100%;
+    order: 1;
+  }
+
+  .snitch-status-filter-pills {
+    order: 2;
+    flex: 1;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .status-pill-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .btn-snitch-refresh {
+    order: 3;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+  }
+
+  /* Payment list container: tighter padding */
+  .snitch-payments-list {
+    padding: 16px 14px;
+    border-radius: 16px;
+    gap: 12px;
+  }
+
+  /* Payment card header: stack left/right groups vertically */
+  .payment-header-row {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .payment-left-group {
+    gap: 10px;
+    width: 100%;
+  }
+
+  .status-bubble {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 11px;
+  }
+
+  .val-code {
+    font-size: 13px;
+    max-width: 55vw;
+  }
+
+  .payment-right-group {
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+    padding-left: 46px; /* aligns roughly under the id text, skipping the bubble */
+    box-sizing: border-box;
+  }
+
+  .price-tag-wrap .price {
+    font-size: 19px;
+  }
+
+  .price-tag-wrap .symbol {
+    font-size: 13px;
+  }
+
+  .badge-status {
+    font-size: 10px;
+    padding: 3px 10px;
+  }
+
+  /* Drawer: single column on mobile */
+  .drawer-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Empty/loading state */
+  .snitch-state-box {
+    padding: 36px 16px;
+    border-radius: 16px;
+    gap: 10px;
+  }
+
+  .snitch-state-box h3 {
+    font-size: 18px;
+  }
+
+  .btn-snitch-action {
+    width: 100%;
+    max-width: 280px;
+    padding: 12px 20px;
+    font-size: 13px;
+  }
+}
+
+/* ---------- Small phone: 420px ---------- */
+@media (max-width: 420px) {
+  .user-menu-dropdown {
+    width: calc(100vw - 24px);
+    right: -12px;
+  }
+
+  .snitch-mydetails-wrapper {
+    padding: 0 12px;
+  }
+
+  .snitch-top-nav-bar {
+    justify-content: flex-start;
+  }
+
+  .hero-username {
+    font-size: 18px;
+  }
+
+  .tab-btn-pill {
+    min-width: 100%;
+  }
+
+  .snitch-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-right-group {
+    padding-left: 0; /* not enough room to indent on tiny screens */
+    flex-wrap: wrap;
+  }
+
+  .val-code {
+    max-width: 45vw;
+  }
 }

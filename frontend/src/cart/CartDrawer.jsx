@@ -22,7 +22,9 @@ export default function CartDrawer() {
     updatePaymentStatusApi
   } = usecart();
 
-  const safeCart = Array.isArray(cart) ? cart : [];
+  const safeCart = Array.isArray(cart)
+    ? cart.filter((item) => item && (item.productDetails || item.title || item.product?.title || item._id || item.productid || item.id))
+    : [];
 
   const drawerVariants = {
     closed: { x: '100%' },
