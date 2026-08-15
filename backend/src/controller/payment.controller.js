@@ -9,23 +9,30 @@ import { Config } from "../config/config.js";
 export const createPaymentOrder = async (req, res) => {
   try {
     const cartAggregation = await aggregationResult(req.user._id);
-    if (!cartAggregation || cartAggregation.length === 0 || !cartAggregation[0].items || cartAggregation[0].items.length === 0) {
-      return res.status(400).json({ message: "Cart is empty" });
-    }
+    const hasCartItems = !!(
+      cartAggregation &&
+      cartAggregation.length > 0 &&
+      Array.isArray(cartAggregation[0].items) &&
+      cartAggregation[0].items.length > 0
+    );
 
     let amountInPaise = 0;
     if (req.body.amount && Number(req.body.amount) > 0) {
       amountInPaise = Number(req.body.amount);
-    } else {
+    } else if (hasCartItems) {
       const rupees = cartAggregation[0].totalCartAmount || 0;
       amountInPaise = Math.round(rupees * 100);
+    }
+
+    if (!hasCartItems && amountInPaise <= 0) {
+      return res.status(400).json({ message: "Cart is empty" });
     }
 
     if (amountInPaise <= 0) {
       return res.status(400).json({ message: "Invalid payment amount in cart" });
     }
 
-    let currency = req.body.currency || cartAggregation[0].currency || "INR";
+    let currency = req.body.currency || (hasCartItems ? cartAggregation[0].currency : "INR") || "INR";
     const order = await createOrder(amountInPaise, currency);
     const payment = await paymentmodel.create({
       user: req.user._id,

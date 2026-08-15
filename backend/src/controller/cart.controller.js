@@ -1,6 +1,7 @@
 import { getstock,aggregationResult } from '../dao/cart.dao.js';
 import CartModel from '../models/cart.model.js';
 import productmodel from '../models/Product.model.js';
+import { findCartItemIndex } from '../utils/cartMatcher.js';
 
 
 async function buildCartItemResponse(item) {
@@ -163,29 +164,31 @@ export async function getcart(req, res) {
 export async function removecartitem(req, res) {
   try {
     const productid = req.params.productid;
-    const cart = await CartModel.findOne({ user: req.user._id });  
+    const cart = await CartModel.findOne({ user: req.user._id });
     if (!cart) {
       return res.status(404).json({
         message: 'cart not found'
       });
     }
-    const itemIndex = cart.items.findIndex(item => item.productid?.toString() === productid || item._id?.toString() === productid);
+
+    const itemIndex = findCartItemIndex(cart.items, productid);
     if (itemIndex === -1) {
       return res.status(404).json({
         message: 'item not found in cart'
       });
     }
+
     cart.items.splice(itemIndex, 1);
-    await cart.save();  
+    await cart.save();
+
     const cartResponse = cart.toObject ? cart.toObject() : cart;
     cartResponse.items = await Promise.all(cart.items.map(buildCartItemResponse));
 
     return res.status(200).json({
       message: 'item removed from cart successfully',
       cart: cartResponse
-    }); 
-  }
-  catch (err) {
+    });
+  } catch (err) {
     return res.status(500).json({
       message: 'internal server error'
     });
@@ -196,7 +199,7 @@ export async function updatecartquantity(req, res) {
   try {
     const productid = req.params.productid;
     const { quantity } = req.body;
-    
+
     if (quantity === undefined || quantity < 0) {
       return res.status(400).json({ message: 'Quantity must be a positive integer or 0' });
     }
@@ -206,7 +209,7 @@ export async function updatecartquantity(req, res) {
       return res.status(404).json({ message: 'cart not found' });
     }
 
-    const itemIndex = cart.items.findIndex(item => item.productid?.toString() === productid || item._id?.toString() === productid);
+    const itemIndex = findCartItemIndex(cart.items, productid);
     if (itemIndex === -1) {
       return res.status(404).json({ message: 'item not found in cart' });
     }
@@ -223,7 +226,7 @@ export async function updatecartquantity(req, res) {
     }
 
     await cart.save();
-    
+
     const cartResponse = cart.toObject ? cart.toObject() : cart;
     cartResponse.items = await Promise.all(cart.items.map(buildCartItemResponse));
 

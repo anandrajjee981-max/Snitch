@@ -39,6 +39,11 @@ export default function CartDrawer() {
       return;
     }
 
+    if (!safeCart.length || cartTotal <= 0) {
+      alert('Your cart is empty. Add an item before checkout.');
+      return;
+    }
+
     try {
       const orderResponse = await createPaymentOrderApi(cartTotal * 100, "INR");
       const orderId = orderResponse?.payment?.orderId || orderResponse?.orderId;
@@ -47,7 +52,11 @@ export default function CartDrawer() {
         throw new Error("Order creation failed - orderId missing");
       }
 
-      const keyId = orderResponse?.key || import.meta.env.VITE_RAZORPAY_KEY_ID || (typeof process !== 'undefined' && process.env?.RAZOR_KEY_ID) || "rzp_test_default";
+      const keyId = orderResponse?.key || import.meta.env.VITE_RAZORPAY_KEY_ID || (typeof process !== 'undefined' && process.env?.RAZOR_KEY_ID);
+
+      if (!keyId) {
+        throw new Error("Razorpay key is missing. Please check your environment configuration.");
+      }
 
       const options = {
         key: keyId,
@@ -144,8 +153,13 @@ export default function CartDrawer() {
                     : (Array.isArray(item.image) ? item.image[0] : item.image);
 
                   const quantity = item.quantity || 1;
-                  const productId = (typeof item.productid === 'object' && item.productid !== null ? (item.productid._id || item.productid.id) : item.productid) || item._id;
-                  
+                  const productId =
+                    (typeof item.productid === 'object' && item.productid !== null
+                      ? (item.productid._id || item.productid.id)
+                      : item.productid)
+                    || item._id
+                    || item.id;
+
                   return (
                     <div className="cart-item" key={itemId}>
                       <div className="item-img-wrapper">
