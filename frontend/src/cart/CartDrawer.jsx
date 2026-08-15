@@ -52,7 +52,7 @@ export default function CartDrawer() {
         throw new Error("Order creation failed - orderId missing");
       }
 
-      const keyId = orderResponse?.key || import.meta.env.VITE_RAZORPAY_KEY_ID || (typeof process !== 'undefined' && process.env?.RAZOR_KEY_ID);
+      const keyId = orderResponse?.key || import.meta.env.VITE_RAZOR_KEY_ID || (typeof process !== 'undefined' && process.env?.RAZOR_KEY_ID);
 
       if (!keyId) {
         throw new Error("Razorpay key is missing. Please check your environment configuration.");
