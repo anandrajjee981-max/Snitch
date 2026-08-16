@@ -30,8 +30,8 @@ export async function createPaymentOrder(amount, currency) {
   const res = await api.post(`/payment/create`, { amount, currency });
   return res.data;
 }
-export async function updatePaymentStatus(orderId, paymentId, signature) {
-  const res = await api.patch(`/payment/update`, { orderId, paymentId, signature });
+export async function updatePaymentStatus(razorpay_order_id, razorpay_payment_id, razorpay_signature) {
+  const res = await api.patch(`/payment/update`, { orderId: razorpay_order_id, paymentId: razorpay_payment_id, signature: razorpay_signature });
   return res.data;
 }
 export async function getPaymentDetails(orderId) {
