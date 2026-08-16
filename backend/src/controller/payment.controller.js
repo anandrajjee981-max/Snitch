@@ -53,7 +53,17 @@ export const createPaymentOrder = async (req, res) => {
 
 export const updatePaymentStatus = async (req, res) => {
   try {
-    const { orderId, paymentId, signature } = req.body; 
+    const body = req.body || {};
+    const orderId = body.orderId ?? body.razorpay_order_id ?? body.order_id;
+    const paymentId = body.paymentId ?? body.razorpay_payment_id ?? body.payment_id;
+    const signature = body.signature ?? body.razorpay_signature ?? body.sign;
+
+    if (!orderId || !paymentId || !signature) {
+      return res.status(400).json({
+        message: "Incomplete Razorpay payment response. Missing orderId, paymentId, or signature."
+      });
+    }
+
     const payment = await paymentmodel.findOne({ orderId });
     if (!payment) {
       return res.status(404).json({ message: "Payment order not found" });
