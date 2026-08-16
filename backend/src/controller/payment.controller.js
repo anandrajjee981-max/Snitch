@@ -1,6 +1,6 @@
 import paymentmodel from "../models/payment.models.js";
 import cartModel from "../models/cart.model.js";
-import productModel from "../models/product.model.js";
+import productModel from "../models/Product.model.js";
 import { aggregationResult } from "../dao/cart.dao.js";
 import { createOrder } from "../service/Payment.service.js";
 import { validatePaymentVerification } from '../utils/razorpay.utils.js';
