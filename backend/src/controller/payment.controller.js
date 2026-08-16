@@ -68,6 +68,9 @@ export const updatePaymentStatus = async (req, res) => {
 
     if (!isSignatureValid) {
       console.warn(`Payment signature mismatch for order ${orderId}, payment ${paymentId}`);
+      return res.status(400).json({
+        message: "Invalid Razorpay payment signature. Payment verification failed."
+      });
     }
 
     payment.status = "paid";
