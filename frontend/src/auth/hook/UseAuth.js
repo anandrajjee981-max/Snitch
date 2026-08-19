@@ -1,11 +1,28 @@
-import { register,login, getme } from "../service/auth.api";
-import { authStart,authFailure,authSuccess } from "../auth.slice";
+import { register, login, getme, verifyGoogleAuthToken } from "../service/auth.api";
+import { authStart, authFailure, authSuccess } from "../auth.slice";
 import { useDispatch } from "react-redux";
-
-
 
 const useauth = () => {
   const dispatch = useDispatch();
+
+  async function handleGoogleVerify(tokenData) {
+    dispatch(authStart());
+    try {
+      const res = await verifyGoogleAuthToken(tokenData);
+      if (res && res.success) {
+        if (res.token) {
+          localStorage.setItem('authToken', res.token);
+        }
+        dispatch(authSuccess({ user: res.user ?? null, token: res.token ?? null }));
+        return { success: true, user: res.user, token: res.token };
+      }
+      throw new Error(res?.message || 'Google Authentication failed');
+    } catch (error) {
+      const message = error?.response?.data?.message || error?.message || 'Google login failed';
+      dispatch(authFailure(message));
+      return { success: false, error: message };
+    }
+  }
 
   async function handleregister(email, password, role, phonenumber, username) {
     dispatch(authStart());
@@ -45,7 +62,7 @@ const useauth = () => {
     }
   }
 
-  return { handleregister, handlelogin ,handlegetme };
+  return { handleregister, handlelogin, handlegetme, handleGoogleVerify };
 };
 
 export default useauth;

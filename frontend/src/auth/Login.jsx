@@ -19,6 +19,7 @@ const GoogleIcon = () => (
   </svg>
 );
 import gsap from 'gsap';
+import { useGoogleLogin } from '@react-oauth/google';
 import useauth from './hook/UseAuth';
 import Navbar from '../components/Navbar';
 
@@ -30,7 +31,7 @@ export default function Login() {
   const cardRef = useRef(null);
   const titleRef = useRef(null);
   const inputsRef = useRef([]);
-  const{handlelogin} = useauth()
+  const { handlelogin, handleGoogleVerify } = useauth();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -75,11 +76,23 @@ export default function Login() {
     }
   };
 
-  const handleGoogleLogin = () => {
-    // Redirect to backend Google auth endpoint which will handle the OAuth flow
-    const BACKEND = import.meta.env.VITE_API_BASE || '';
-    window.location.href = `${BACKEND}/api/auth/google`;
-  };
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      const res = await handleGoogleVerify(tokenResponse);
+      if (res && res.success) {
+        const userRole = res?.user?.role;
+        if (userRole?.toLowerCase() === 'seller') {
+          navigate('/sellerdashboard');
+        } else {
+          navigate('/dashboard');
+        }
+      }
+    },
+    onError: (error) => {
+      console.error('Google Sign-In Failed:', error);
+      alert('Google Sign-In failed or was cancelled');
+    }
+  });
 
   return (
     <div className="auth-page-container">

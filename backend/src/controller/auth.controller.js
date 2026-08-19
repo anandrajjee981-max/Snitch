@@ -2,6 +2,9 @@ import usermodel from '../models/User.model.js';
 import jwt from 'jsonwebtoken';
 import { Config } from '../config/config.js';
 import passport from 'passport';
+import { OAuth2Client } from 'google-auth-library';
+
+const googleClient = new OAuth2Client(Config.CLIENT_ID);
 
 
 async function generateToken(user, res) {
@@ -148,6 +151,93 @@ export function googleAuthCallback(req, res, next) {
     }
   })(req, res, next);
 }
+export async function verifyGoogleToken(req, res) {
+  try {
+    const { token, accessToken } = req.body;
+    const tokenToVerify = token || accessToken;
+
+    if (!tokenToVerify) {
+      return res.status(400).json({
+        success: false,
+        message: "Google credential / token is required"
+      });
+    }
+
+    let email = null;
+    let name = null;
+    let googleId = null;
+
+    // Check if token is a JWT ID token (3 segments separated by dots) or access token
+    if (typeof tokenToVerify === 'string' && tokenToVerify.split('.').length === 3) {
+      try {
+        const ticket = await googleClient.verifyIdToken({
+          idToken: tokenToVerify,
+          audience: Config.CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+        if (payload) {
+          email = payload.email;
+          name = payload.name;
+          googleId = payload.sub;
+        }
+      } catch (idErr) {
+        console.warn("verifyIdToken failed, trying userinfo endpoint:", idErr.message);
+      }
+    }
+
+    // If ID token verification was not applicable or failed, verify via Google UserInfo API
+    if (!email) {
+      const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: `Bearer ${tokenToVerify}` }
+      });
+      if (response.ok) {
+        const userInfo = await response.json();
+        email = userInfo.email;
+        name = userInfo.name;
+        googleId = userInfo.sub;
+      }
+    }
+
+    if (!email) {
+      return res.status(401).json({
+        success: false,
+        message: "Failed to verify Google token"
+      });
+    }
+
+    // Find or create user
+    let user = await usermodel.findOne({ email });
+    if (!user) {
+      user = new usermodel({
+        username: name || email.split('@')[0],
+        email: email,
+        role: "buyer"
+      });
+      await user.save();
+    }
+
+    const appToken = await generateToken(user, res);
+
+    return res.status(200).json({
+      success: true,
+      message: "Google authentication successful",
+      token: appToken,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error("Google token verification error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error during Google verification"
+    });
+  }
+}
+
 export async function getme(req,res){
   try{
     const user = await usermodel.findById(req.user.id)
