@@ -5,10 +5,10 @@ import { useDispatch } from "react-redux";
 const useauth = () => {
   const dispatch = useDispatch();
 
-  async function handleGoogleVerify(tokenData) {
+  async function handleGoogleVerify(tokenData, role) {
     dispatch(authStart());
     try {
-      const res = await verifyGoogleAuthToken(tokenData);
+      const res = await verifyGoogleAuthToken(tokenData, role);
       if (res && res.success) {
         if (res.token) {
           localStorage.setItem('authToken', res.token);

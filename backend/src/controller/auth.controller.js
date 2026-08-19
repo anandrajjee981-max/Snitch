@@ -153,7 +153,7 @@ export function googleAuthCallback(req, res, next) {
 }
 export async function verifyGoogleToken(req, res) {
   try {
-    const { token, accessToken } = req.body;
+    const { token, accessToken, role } = req.body;
     const tokenToVerify = token || accessToken;
 
     if (!tokenToVerify) {
@@ -208,10 +208,11 @@ export async function verifyGoogleToken(req, res) {
     // Find or create user
     let user = await usermodel.findOne({ email });
     if (!user) {
+      const assignedRole = role === "seller" ? "seller" : "buyer";
       user = new usermodel({
         username: name || email.split('@')[0],
         email: email,
-        role: "buyer"
+        role: assignedRole
       });
       await user.save();
     }

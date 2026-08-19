@@ -35,10 +35,10 @@ return res.data
     }
 }
 
-export async function verifyGoogleAuthToken(tokenData) {
+export async function verifyGoogleAuthToken(tokenData, role) {
     const payload = typeof tokenData === 'string' 
-        ? { token: tokenData } 
-        : { token: tokenData.credential, accessToken: tokenData.access_token };
+        ? { token: tokenData, role } 
+        : { token: tokenData.credential, accessToken: tokenData.access_token, role };
     const res = await api.post("/auth/google/verify", payload);
     return res.data;
 }

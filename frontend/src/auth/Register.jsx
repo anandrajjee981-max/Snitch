@@ -70,7 +70,12 @@ export default function Register() {
 
     const res = await handleregister(email, password, role, phone, username);
     if (res && res.success) {
-      navigate('/dashboard');
+      const userRole = res?.res?.user?.role || role;
+      if (userRole?.toLowerCase() === 'seller') {
+        navigate('/sellerdashboard');
+      } else {
+        navigate('/dashboard');
+      }
     } else {
       const msg = res?.error || 'Registration failed';
       alert(msg);
@@ -79,9 +84,10 @@ export default function Register() {
 
   const handleGoogleSignup = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      const res = await handleGoogleVerify(tokenResponse);
+      // Pass the selected role ('buyer' or 'seller') to backend
+      const res = await handleGoogleVerify(tokenResponse, role);
       if (res && res.success) {
-        const userRole = res?.user?.role;
+        const userRole = res?.user?.role || role;
         if (userRole?.toLowerCase() === 'seller') {
           navigate('/sellerdashboard');
         } else {
