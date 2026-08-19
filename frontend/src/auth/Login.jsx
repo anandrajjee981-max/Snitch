@@ -77,7 +77,7 @@ export default function Login() {
 
   const handleGoogleLogin = () => {
     // Redirect to backend Google auth endpoint which will handle the OAuth flow
-    const BACKEND = import.meta.env.VITE_API_BASE || 'http://localhost:3000';
+    const BACKEND = import.meta.env.VITE_API_BASE || '';
     window.location.href = `${BACKEND}/api/auth/google`;
   };
 
