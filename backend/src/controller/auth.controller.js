@@ -126,13 +126,13 @@ export function googleAuthCallback(req, res, next) {
     if (err) {
       console.error('Google auth error:', err);
 
-      return res.redirect('http://localhost:5173/');
+      return res.redirect('https://snitch-indol.vercel.app/');
     }
 
     if (!user) {
       console.warn('No user returned from passport:', info);
    
-      return res.redirect('http://localhost:5173/login?error=auth_failed');
+      return res.redirect('https://snitch-indol.vercel.app/login?error=auth_failed');
     }
 
     // 3. Handle successful authentication
@@ -141,10 +141,10 @@ export function googleAuthCallback(req, res, next) {
       await generateToken(user, res);
 
       const redirectPath = user.role === 'seller' ? '/sellerdashboard' : '/dashboard';
-      return res.redirect(`http://localhost:5173${redirectPath}`); 
+      return res.redirect(`https://snitch-indol.vercel.app/${redirectPath}`); 
     } catch (tokenErr) {
       console.error('Token generation error:', tokenErr);
-      return res.redirect('http://localhost:5173/login?error=token_generation_failed');
+      return res.redirect('https://snitch-indol.vercel.app/login?error=token_generation_failed');
     }
   })(req, res, next);
 }

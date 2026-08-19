@@ -69,7 +69,7 @@ app.use(cors({ origin: [
 app.use(passport.initialize())
 app.use(morgan("combined"))
 
-const CALLBACK_BASE = process.env.BACKEND_URL || 'http://localhost:5173';
+const CALLBACK_BASE = process.env.BACKEND_URL ||'https://snitch-indol.vercel.app'|| 'http://localhost:5173';
 
 passport.use(new GoogleStrategy({
     clientID:Config.CLIENT_ID,
